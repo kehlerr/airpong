@@ -5,15 +5,6 @@ from field  import *
 from slider import *
 from ball   import *
 
-DISPLAY_W = 1000
-DISPLAY_H = 600
-DISPLAY_SIZE = (DISPLAY_W, DISPLAY_H)
-FIELD_W = 800
-FIELD_H = 600
-BKG_CL = 90, 10, 100
-
-
-
 def initwindow((width, height), title):
      #pygame.init()
      global CLOCK

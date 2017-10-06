@@ -22,10 +22,6 @@ class Ball(pygame.sprite.Sprite):
           self.max_vel = max_vel
           self.delta_vel = delta_vel 
 
-     def Draw(self, color):
-#          pygame.draw.circle(self.sfce, color, (int(self.ball_x), int(self.ball_y)), self.rad, self.rad)
-          pass
-
      def Move(self, sliders):
           self.rect.x += self.vel*math.cos(math.radians(self.angle))
           self.rect.y += self.vel*math.sin(math.radians(self.angle))
