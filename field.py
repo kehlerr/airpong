@@ -3,6 +3,7 @@
 import pygame
 from field_defs import *
 from color_defs import *
+from post import *
 
 class Field:
      
@@ -22,10 +23,13 @@ class Field:
           pygame.draw.circle(self.sfce, SNOW, (self.FieldRect.centerx+1, self.FieldRect.centery+1), FIELD_CENTER_SIZE, 3)
           pygame.draw.line(self.sfce, SNOW, (self.FieldRect.left+NET_SIZE, self.FieldRect.top), (self.FieldRect.left+NET_SIZE, self.FieldRect.bottom), 5) 
           pygame.draw.line(self.sfce, SNOW, (self.FieldRect.right-NET_SIZE, self.FieldRect.top), (self.FieldRect.right-NET_SIZE,self.FieldRect.bottom), 5) 
-          pygame.draw.circle(self.sfce, SNOW, (self.FieldRect.left+NET_SIZE, self.FieldRect.top+CROSS_SIZE/2), CROSS_SIZE, CROSS_SIZE)
-          pygame.draw.circle(self.sfce, SNOW, (self.FieldRect.left+NET_SIZE, self.FieldRect.bottom-CROSS_SIZE/2), CROSS_SIZE, CROSS_SIZE)
-          pygame.draw.circle(self.sfce, SNOW, (self.FieldRect.right-NET_SIZE, self.FieldRect.top+CROSS_SIZE/2), CROSS_SIZE, CROSS_SIZE)
-          pygame.draw.circle(self.sfce, SNOW, (self.FieldRect.right-NET_SIZE, self.FieldRect.bottom-CROSS_SIZE/2), CROSS_SIZE, CROSS_SIZE)
+
+          Post(self.sfce, self.FieldRect.right - NET_SIZE, self.FieldRect.top + POST_SIZE/2)
+          Post(self.sfce, self.FieldRect.left  + NET_SIZE, self.FieldRect.top + POST_SIZE/2)
+          Post(self.sfce, self.FieldRect.left  + NET_SIZE, self.FieldRect.bottom - POST_SIZE/2)
+          Post(self.sfce, self.FieldRect.right - NET_SIZE, self.FieldRect.bottom - POST_SIZE/2)
+          Post(self.sfce, self.FieldRect.centerx+23, self.FieldRect.centery-52)
+
           for y in range(FIELD_H / NET_DENSE):
                pygame.draw.aaline(self.sfce, SNOW, (self.FieldRect.left, y*NET_DENSE), (self.FieldRect.left+NET_SIZE, (y+1)*NET_DENSE), 1) 
                pygame.draw.aaline(self.sfce, SNOW, (self.FieldRect.left+NET_SIZE, y*NET_DENSE), (self.FieldRect.left, (y+1)*NET_DENSE), 1) 

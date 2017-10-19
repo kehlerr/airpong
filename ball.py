@@ -3,7 +3,6 @@
 import pygame, math
 from field_defs import *
 from ball_defs  import *
-from color_defs import *
 from phys_defs  import *
 
 class Ball(pygame.sprite.Sprite):
@@ -11,9 +10,9 @@ class Ball(pygame.sprite.Sprite):
                   sfce,                           # deprecated (?) 
                   start_x   = FIELD_W/2, 
                   start_y   = FIELD_H/2, 
-                  color     = BALL_CL,            # deprecated (?) 
+                  color     = None,             # deprecated (?) 
                   radius    = BALL_RAD, 
-                  start_ang = -190, 
+                  start_ang = 90, 
                   start_vel = BALL_SPEED, 
                   max_vel   = MAX_BALL_SPEED, 
                   delta_vel = BALL_DELTA_VEL) :
@@ -30,11 +29,11 @@ class Ball(pygame.sprite.Sprite):
           self.max_vel   = max_vel
           self.delta_vel = delta_vel 
 
-     def Move(self, sliders):
+     def Move(self, sliders, posts):
           shift_x = self.vel*math.cos(math.radians(self.ang))
           shift_y = self.vel*math.sin(math.radians(self.ang))
           shift   = shift_x, shift_y
-          collision = self.ChkCollision((shift_x, shift_y), sliders)
+          collision = self.ChkCollision((shift_x, shift_y), sliders, posts)
           if collision is not None:
                self.ChAngle(collision)
                if self.vel < self.max_vel: self.vel += self.delta_vel
@@ -42,7 +41,7 @@ class Ball(pygame.sprite.Sprite):
                self.rect.move_ip(shift)
           
 
-     def ChkCollision(self, shift, Sliders = None):
+     def ChkCollision(self, shift, Sliders = None, Posts = None):
           shift_x, shift_y = shift
 
           if   self.rect.top + shift_y < 0: 
@@ -80,6 +79,13 @@ class Ball(pygame.sprite.Sprite):
                          self.rect.left  + shift_x > x_l ):
                          self.rect.right = x_l
                          return HOR
+          
+          for post in Posts:
+               x_c = post.rect.centerx
+               y_c = post.rect.centery
+
+               if (self.rect.centerx - x_c)**2 + (self.rect.centery - y_c)**2 <= (self.rad + post.size/2)**2:
+                    return VER 
 
           return None
 

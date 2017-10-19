@@ -54,7 +54,7 @@ def main():
           else: 
                KeyControl(event)
      
-     initgame.ball.Move(initgame.SLIDERS)
+     initgame.ball.Move(initgame.SLIDERS, initgame.POSTS)
      initgame.rightSlider.Move(random.choice([UP,DOWN]), random.choice(range(5, 10)))
 
 

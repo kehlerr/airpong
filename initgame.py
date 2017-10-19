@@ -25,10 +25,14 @@ def initgameobj():
                                                                       
      entities = [] 
      entities.append(ball)
-     SLIDERS = [] 
+
      leftSlider  = SliderBate(DISPLAYSFCE, FIELD.FieldRect.left + SLIDER_DISTX, 20)
      rightSlider = SliderBate(DISPLAYSFCE, FIELD.FieldRect.right - SLIDER_DISTX-SLIDER_W,  0)
-
      entities.append(leftSlider)
      entities.append(rightSlider)
+
+     for post in POSTS: entities.append(post)
+
+#     POSTS.append(Post(DISPLAYSFCE), 
+          
      SPRITES = pygame.sprite.RenderPlain(entities)
