@@ -1,24 +1,26 @@
 #!/usr/bin/python 
 
-import pygame, math, numpy,  random, sys
+import pygame, random
 from functools import wraps
+from sys       import exit
 from pygame.locals import *
 
 import initgame
 from initgame import *
 
-
-
-FPS = 60
-
-def KeyControl(isPressed):
-
+def KeyControl(eventKey):
      try:
-          if KeyControl.acceleration < 25: KeyControl.acceleration += 2
-          if isPressed[K_UP] : initgame.leftSlider.Move(UP, KeyControl.acceleration)
-          if isPressed[K_DOWN] : initgame.leftSlider.Move(DOWN, KeyControl.acceleration)
-          if isPressed[K_w] : initgame.rightSlider.Move(UP, KeyControl.acceleration)
-          if isPressed[K_s] : initgame.rightSlider.Move(DOWN, KeyControl.acceleration)
+          if eventKey.type == KEYDOWN:
+               isPressed = pygame.key.get_pressed()
+               if KeyControl.acceleration < 25: KeyControl.acceleration += 2
+               if isPressed[K_UP] : initgame.leftSlider.Move(UP, KeyControl.acceleration)
+               if isPressed[K_DOWN] : initgame.leftSlider.Move(DOWN, KeyControl.acceleration)
+               if isPressed[K_w] : initgame.rightSlider.Move(UP, KeyControl.acceleration)         ####   WTF? O_o It isn't working
+               if isPressed[K_s] : initgame.rightSlider.Move(DOWN, KeyControl.acceleration)       ####   
+
+          elif eventKey.type == KEYUP:
+               KeyControl.acceleration = 1
+
      except AttributeError:
           KeyControl.acceleration = 1
      except NameError:
@@ -30,17 +32,17 @@ def main_wrapp(loop):
      def decorated():
           initgameobj()
 
-
           while True:
-               initgame.CLOCK.tick(FPS)
+               CLOCK.tick(FPS)
                for sprite in initgame.SPRITES:
                     initgame.DISPLAYSFCE.blit(initgame.FIELD.bkgImg, sprite.rect, sprite.rect)
+
                loop()
+
                for sprite in initgame.SPRITES:
                     initgame.DISPLAYSFCE.blit(sprite.image, sprite.rect)
                pygame.display.update()
      return decorated          
-
 
 @main_wrapp
 def main():
@@ -48,12 +50,9 @@ def main():
      for event in pygame.event.get():
           if event.type == QUIT:
                pygame.quit()
-               sys.exit()
-          if event.type == KEYDOWN:
-               KeyControl(pygame.key.get_pressed())
-          if event.type == KEYUP:
-               KeyControl.acceleration = 2     
-
+               exit()
+          else: 
+               KeyControl(event)
      
      initgame.ball.Move(initgame.SLIDERS)
      initgame.rightSlider.Move(random.choice([UP,DOWN]), random.choice(range(5, 10)))

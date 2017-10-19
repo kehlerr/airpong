@@ -24,5 +24,5 @@ class SliderBate(pygame.sprite.Sprite):
           delta = direct * velocity
           self.rect.centery -= delta
               
-          if self.rect.top < 0 : self.rect.top = 0
+          if self.rect.top < 0 : self.rect.top = 0 
           if self.rect.bottom > FIELD_H : self.rect.bottom = FIELD_H

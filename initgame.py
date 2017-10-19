@@ -1,13 +1,12 @@
 #!/usr/bin/python
 
-import pygame
+from oth    import *
 from field  import *
 from slider import *
 from ball   import *
 
 def initwindow((width, height), title):
      #pygame.init()
-     global CLOCK
      CLOCK = pygame.time.Clock()
 
      display = pygame.display.set_mode((width, height))
@@ -27,8 +26,8 @@ def initgameobj():
      entities = [] 
      entities.append(ball)
      SLIDERS = [] 
-     leftSlider  = SliderBate(DISPLAYSFCE, FIELD.FieldRect.left + SLIDER_DISTX, FIELD_H/2)
-     rightSlider = SliderBate(DISPLAYSFCE, FIELD.FieldRect.right - SLIDER_DISTX, FIELD_H/2)
+     leftSlider  = SliderBate(DISPLAYSFCE, FIELD.FieldRect.left + SLIDER_DISTX, 20)
+     rightSlider = SliderBate(DISPLAYSFCE, FIELD.FieldRect.right - SLIDER_DISTX-SLIDER_W,  0)
 
      entities.append(leftSlider)
      entities.append(rightSlider)
