@@ -13,5 +13,9 @@ class Post(pygame.sprite.Sprite):
           self.rect = self.image.get_rect()
           self.rect.center = pos_x, pos_y
           self.size = size
+          self.sfce.blit(self.image, self.rect)
           POSTS.append(self)
      
+     def Move(self, dx, dy):
+          if dx: self.rect.centerx = dx
+          if dy: self.rect.centery = dy

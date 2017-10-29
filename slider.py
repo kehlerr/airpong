@@ -4,6 +4,7 @@ import pygame
 from slider_defs import *
 from field_defs  import *
 from color_defs  import *
+from post import *
 
 global SLIDERS 
 SLIDERS = []
@@ -19,10 +20,16 @@ class SliderBate(pygame.sprite.Sprite):
           self.rect = self.image.get_rect() 
           self.rect.x = pos_x
           self.rect.y = pos_y
-         
+          self.width = width
+          self.height = height
+          self.topPost = Post(self.sfce, self.rect.centerx, self.rect.top + width/2, width)
+          self.botPost = Post(self.sfce, self.rect.centerx, self.rect.bottom - width/2, width)
+
      def Move(self, direct, velocity=1):
           delta = direct * velocity
           self.rect.centery -= delta
-              
-          if self.rect.top < 0 : self.rect.top = 0 
+          if self.rect.top < 0 : self.rect.top = 0
           if self.rect.bottom > FIELD_H : self.rect.bottom = FIELD_H
+
+          self.topPost.Move(None, self.rect.top + self.width/2)
+          self.botPost.Move(None, self.rect.bottom - self.width/2)

@@ -35,7 +35,7 @@ def main_wrapp(loop):
           while True:
                CLOCK.tick(FPS)
                for sprite in initgame.SPRITES:
-                    initgame.DISPLAYSFCE.blit(initgame.FIELD.bkgImg, sprite.rect, sprite.rect)
+                    initgame.DISPLAYSFCE.blit(initgame.FIELD.FieldSfce, sprite.rect, sprite.rect)
 
                loop()
 
@@ -43,7 +43,7 @@ def main_wrapp(loop):
                     initgame.DISPLAYSFCE.blit(sprite.image, sprite.rect)
                pygame.display.update()
      return decorated          
-
+     
 @main_wrapp
 def main():
 
@@ -55,6 +55,7 @@ def main():
                KeyControl(event)
      
      initgame.ball.Move(initgame.SLIDERS, initgame.POSTS)
+     initgame.ball2.Move(initgame.SLIDERS, initgame.POSTS)
      initgame.rightSlider.Move(random.choice([UP,DOWN]), random.choice(range(5, 10)))
 
 
