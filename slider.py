@@ -15,7 +15,7 @@ class SliderBate(pygame.sprite.Sprite):
           pygame.sprite.Sprite.__init__(self)
           SLIDERS.append(self)
           self.sfce = sfce
-          image = pygame.image.load('pic/slider2.png')
+          image = pygame.image.load('pic/slider_green.png')
           self.image = pygame.transform.scale(image, (width, height))
           self.rect = self.image.get_rect() 
           self.rect.x = pos_x

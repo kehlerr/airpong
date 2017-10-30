@@ -9,17 +9,17 @@ class Ball(pygame.sprite.Sprite):
      def __init__(self, 
                   sfce,                           # deprecated (?) 
                   bkgImg,
-                  start_x   = 400, 
-                  start_y   = 50, 
+                  start_x   = 200, 
+                  start_y   = 500, 
                   color     = None,             # deprecated (?) 
                   radius    = BALL_RAD, 
-                  start_ang = -180, 
+                  start_ang = -40, 
                   start_vel = BALL_SPEED, 
                   max_vel   = MAX_BALL_SPEED, 
                   delta_vel = BALL_DELTA_VEL) :
 
           pygame.sprite.Sprite.__init__(self)
-          image = pygame.image.load('pic/ball_spr1.png')
+          image = pygame.image.load('pic/ball_blue.png')
           self.image = pygame.transform.scale(image, (radius, radius))
           self.sfce = sfce
           self.bkgImg = bkgImg
@@ -32,26 +32,26 @@ class Ball(pygame.sprite.Sprite):
           self.max_vel   = max_vel
           self.delta_vel = delta_vel 
 
-
      def Move(self, sliders, posts):
           shift_x = self.vel*math.cos(math.radians(self.ang))
           shift_y = self.vel*math.sin(math.radians(self.ang))
           dx = 1 if shift_x > 0 else -1
           dy = 1 if shift_y > 0 else -1
           for movs in range(int(max(math.fabs(shift_x), math.fabs(shift_y)))):
-                    dx = dx if math.fabs(shift_x) > movs else 0
-                    dy = dy if math.fabs(shift_y) > movs else 0
-                    self.sfce.blit(self.bkgImg, self.rect, self.rect)
-                    self.rect.x += dx 
-                    self.rect.y += dy
-                    self.sfce.blit(self.image, self.rect)       
+               dx = dx if math.fabs(shift_x) > movs else 0
+               dy = dy if math.fabs(shift_y) > movs else 0
+#               self.sfce.blit(self.bkgImg, self.rect, self.rect)
+               self.rect.x += dx
+               self.rect.y += dy
+#               self.sfce.blit(self.image, self.rect)       
 
-          self.sfce.blit(self.bkgImg, self.rect, self.rect)
+#          self.sfce.blit(self.bkgImg, self.rect, self.rect)
           collision = self.ChkCollision(shift_x, shift_y, sliders, posts)
-          self.sfce.blit(self.image, self.rect)       
-
+#          print collision
           if self.ChAngle(collision) or collision:
                if self.vel < self.max_vel: self.vel += self.delta_vel
+#          self.sfce.blit(self.image, self.rect)       
+
           
 
      def ChkCollision(self, shift_x, shift_y, Sliders = None, Posts = None):
