@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import pygame, math
+import pygame, math, random
 from field_defs import *
 from ball_defs  import *
 from phys_defs  import *
@@ -35,24 +35,12 @@ class Ball(pygame.sprite.Sprite):
      def Move(self, sliders, posts):
           shift_x = self.vel*math.cos(math.radians(self.ang))
           shift_y = self.vel*math.sin(math.radians(self.ang))
-          dx = 1 if shift_x > 0 else -1
-          dy = 1 if shift_y > 0 else -1
-          for movs in range(int(max(math.fabs(shift_x), math.fabs(shift_y)))):
-               dx = dx if math.fabs(shift_x) > movs else 0
-               dy = dy if math.fabs(shift_y) > movs else 0
-#               self.sfce.blit(self.bkgImg, self.rect, self.rect)
-               self.rect.x += dx
-               self.rect.y += dy
-#               self.sfce.blit(self.image, self.rect)       
+          self.rect.x += shift_x
+          self.rect.y += shift_y
 
-#          self.sfce.blit(self.bkgImg, self.rect, self.rect)
           collision = self.ChkCollision(shift_x, shift_y, sliders, posts)
-#          print collision
           if self.ChAngle(collision) or collision:
                if self.vel < self.max_vel: self.vel += self.delta_vel
-#          self.sfce.blit(self.image, self.rect)       
-
-          
 
      def ChkCollision(self, shift_x, shift_y, Sliders = None, Posts = None):
           if   self.rect.top + shift_y < 0: 
@@ -82,8 +70,7 @@ class Ball(pygame.sprite.Sprite):
                     # hit from right 
                     if ( self.rect.centerx > x_l and 
                          self.rect.centerx - self.rad + shift_x < x_r ):           
-#                    if (self.rect.left + shift_x - x_r)**2  < (self.rad)**2:
-                         self.rect.left = x_r
+                         self.rect.left = x_r + self.rad
                          return HOR   
 
                     # hit from left 
@@ -91,7 +78,6 @@ class Ball(pygame.sprite.Sprite):
                          self.rect.centerx + self.rad  + shift_x > x_l ):
                          self.rect.right = x_l
                          return HOR
-
           
           for post in Posts:
                x_c = post.rect.centerx
@@ -107,9 +93,10 @@ class Ball(pygame.sprite.Sprite):
                     self.rect.centery = y_c + c * math.sin(angle_collide)
                     self.ang = math.degrees(angle_collide)
                     return 5 
-
           return None
 
      def ChAngle(self, axis):
           if   axis == HOR : self.ang = math.degrees(math.pi) - self.ang
           elif axis == VER : self.ang *= -1         
+          else: return None
+          self.ang = (self.ang + random.randint(-RND_ANG_DISPERS, RND_ANG_DISPERS)) % int(2*math.degrees(math.pi))

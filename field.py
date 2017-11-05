@@ -19,9 +19,7 @@ class Field:
           self.bkgImg.blit(self.FieldSfce, (0,0))
           self.sfce.blit(self.bkgImg, (0,0))
 
-     def __del__(self):
-#          os.system('rm tmp_net.png')
-          pass
+
      def Draw(self):          
           self.FieldSfce.blit(self.bkgImg, (0, 0))
           pygame.draw.line(self.FieldSfce, BLACK, (self.FieldRect.topleft), (self.FieldRect.bottomleft), 1)       
