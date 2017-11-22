@@ -1,9 +1,9 @@
 #!/usr/bin/python
 
-from oth    import *
-from field  import *
-from slider import *
-from ball   import *
+from oth     import *
+from field   import *
+from slider  import *
+from ball    import *
 
 def initwindow((width, height), title):
      #pygame.init()
@@ -12,26 +12,21 @@ def initwindow((width, height), title):
      display = pygame.display.set_mode((width, height))
      pygame.display.set_caption(title)
      display.fill(BKG_CL)
-     pygame.key.set_repeat(50, 5)
+     pygame.key.set_repeat(KEY_REPEAT_DEL, KEY_REPEAT_INT)
+     pygame.mouse.set_visible(False)
                                         
      return display
 
 
 def initgameobj():
-     global DISPLAYSFCE, FIELD, SPRITES, leftSlider, rightSlider, ball, ball2
+     global DISPLAYSFCE, FIELD, SPRITES, USERSLIDER, BOTSLIDER
 
-     DISPLAYSFCE = initwindow(DISPLAY_SIZE, 'AirPong')
+     DISPLAYSFCE = initwindow(DISPLAY_SIZE, WINDOW_TITLE)
      FIELD = Field(DISPLAYSFCE)
-     ball = Ball(DISPLAYSFCE, FIELD.bkgImg)
-#     ball2 = Ball(DISPLAYSFCE, FIELD.bkgImg, 50, 20, None, BALL_RAD, 46)
-     leftSlider  = SliderBate(DISPLAYSFCE, FIELD.FieldRect.left + SLIDER_DISTX, 20)
-     rightSlider = SliderBate(DISPLAYSFCE, FIELD.FieldRect.right - SLIDER_DISTX-SLIDER_W,  0)
-                                                                      
-     entities = [] 
 
-     entities.append(ball)
- #    entities.append(ball2)
-     entities.append(leftSlider)
-     entities.append(rightSlider)
+     Ball(FIELD.FieldSfce, FIELD.FieldSfce)
+     USERSLIDER = Slider(FIELD.FieldSfce, L_GOAL_LINE + SLIDER_DISTX, 10, 'pic/slider_red.png')
+     BOTSLIDER = Slider(FIELD.FieldSfce, R_GOAL_LINE - SLIDER_DISTX,  10, 'pic/slider_blue.png')
+    
+     SPRITES = pygame.sprite.RenderPlain(BALLS, SLIDERS)
 
-     SPRITES = pygame.sprite.RenderPlain(entities)

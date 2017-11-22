@@ -8,7 +8,7 @@ class Net(pygame.sprite.Sprite):
      def __init__(self, sfce, pos_x, pos_y, width, height):
           pygame.sprite.Sprite.__init__(self)
           self.sfce = sfce
-          img = Image.open(r'pic/net4.png').crop((0,0, width, height))
+          img = Image.open(r'pic/net5.png').crop((0,0, width, height))
           cropped_imgname = r'pic/tmp_net.png'
 
           try:

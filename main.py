@@ -8,18 +8,22 @@ from pygame.locals import *
 import initgame
 from initgame import *
 
+
 def KeyControl(eventKey):
      try:
           if eventKey.type == KEYDOWN:
                isPressed = pygame.key.get_pressed()
-               if KeyControl.acceleration < 25: KeyControl.acceleration += 2
-               if isPressed[K_UP] : initgame.leftSlider.Move(UP, KeyControl.acceleration)
-               if isPressed[K_DOWN] : initgame.leftSlider.Move(DOWN, KeyControl.acceleration)
-               if isPressed[K_w] : initgame.rightSlider.Move(UP, KeyControl.acceleration)         ####   WTF? O_o It isn't working
-               if isPressed[K_s] : initgame.rightSlider.Move(DOWN, KeyControl.acceleration)       ####   
+               if KeyControl.acceleration < 10: KeyControl.acceleration += 0.5
+               if isPressed[K_UP]: initgame.BOTSLIDER.Move(UP, KeyControl.acceleration)
+               if isPressed[K_DOWN]: initgame.BOTSLIDER.Move(DOWN, KeyControl.acceleration)
+               if isPressed[K_w]: initgame.USERSLIDER.Move(UP, KeyControl.acceleration)
+               if isPressed[K_s]: initgame.USERSLIDER.Move(DOWN, KeyControl.acceleration)
 
           elif eventKey.type == KEYUP:
                KeyControl.acceleration = 1
+
+          elif eventKey.type == MOUSEMOTION:
+               initgame.USERSLIDER.rect.y = pygame.mouse.get_pos()[Y]
 
      except AttributeError:
           KeyControl.acceleration = 1
@@ -41,8 +45,9 @@ def main_wrapp(loop):
 
                for sprite in initgame.SPRITES:
                     initgame.DISPLAYSFCE.blit(sprite.image, sprite.rect)
+
                pygame.display.update()
-     return decorated          
+     return decorated
      
 @main_wrapp
 def main():
@@ -51,12 +56,14 @@ def main():
           if event.type == QUIT:
                pygame.quit()
                exit()
-          else: 
+          else:
                KeyControl(event)
-     
-     initgame.ball.Move(initgame.SLIDERS, initgame.POSTS)
-#     initgame.ball2.Move(initgame.SLIDERS, initgame.POSTS)
-     initgame.rightSlider.Move(random.choice([UP,DOWN]), random.choice(range(5, 10)))
+               KeyControl(event)
+
+     for ball in initgame.BALLS:
+          ball.Live(initgame.SLIDERS, initgame.POSTS)
+
+     initgame.SPRITES.add(initgame.SPARKLES)
 
 
 if __name__ == '__main__':

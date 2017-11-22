@@ -1,20 +1,25 @@
 import pygame
-from field_defs import POST_SIZE
+from field_defs import POST_SIZE, POST_IMAGE
+from color_defs import BLACK
 
 global POSTS
 POSTS = []
 
 class Post(pygame.sprite.Sprite):
-     def __init__(self, sfce, pos_x, pos_y, size = POST_SIZE):
+     def __init__(self, sfce, pos_x, pos_y, size = POST_SIZE, img_name = POST_IMAGE):
           pygame.sprite.Sprite.__init__(self)
-          self.sfce = sfce         
-          image = pygame.image.load('pic/post2.png')
-          self.image = pygame.transform.scale(image, (size, size))
-          self.rect = self.image.get_rect()
-          self.rect.center = pos_x, pos_y
-          self.size = size
-          self.sfce.blit(self.image, self.rect)
           POSTS.append(self)
+          self.sfce = sfce         
+          self.size = size
+          if img_name:
+               image = pygame.image.load(img_name)
+               self.image = pygame.transform.scale(image, (size, size))
+               self.image.set_colorkey(BLACK)
+               self.mask = pygame.mask.from_surface(self.image)
+               self.rect = self.image.get_rect()
+               self.rect.center = pos_x, pos_y
+               self.sfce.blit(self.image, self.rect)
+     
      
      def Move(self, dx, dy):
           if dx: self.rect.centerx = dx

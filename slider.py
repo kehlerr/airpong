@@ -9,27 +9,25 @@ from post import *
 global SLIDERS 
 SLIDERS = []
 
-class SliderBate(pygame.sprite.Sprite):
+class Slider(pygame.sprite.Sprite):
     
-     def __init__(self, sfce, pos_x, pos_y, height = SLIDER_H, width = SLIDER_W):
+     def __init__(self, sfce, pos_x, pos_y, imgname, height = SLIDER_H, width = SLIDER_W):
           pygame.sprite.Sprite.__init__(self)
           SLIDERS.append(self)
           self.sfce = sfce
-          image = pygame.image.load('pic/slider_green.png')
+          image = pygame.image.load(imgname)
           self.image = pygame.transform.scale(image, (width, height))
+        #  self.image = pygame.transform.rotate(self.image, 32)
+          self.image.set_colorkey(WHITE)
+          self.mask = pygame.mask.from_surface(self.image)
           self.rect = self.image.get_rect() 
-          self.rect.x = pos_x
+          self.rect.x = pos_x - width/2
           self.rect.y = pos_y
           self.width = width
           self.height = height
-          self.topPost = Post(self.sfce, self.rect.centerx, self.rect.top + width/2, width)
-          self.botPost = Post(self.sfce, self.rect.centerx, self.rect.bottom - width/2, width)
 
      def Move(self, direct, velocity=1):
           delta = direct * velocity
           self.rect.centery -= delta
           if self.rect.top < 0 : self.rect.top = 0
           if self.rect.bottom > FIELD_H : self.rect.bottom = FIELD_H
-
-          self.topPost.Move(None, self.rect.top + self.width/2)
-          self.botPost.Move(None, self.rect.bottom - self.width/2)
