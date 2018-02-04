@@ -4,8 +4,8 @@ import obj_template
 from slider_defs import *
 from field_defs  import *
 
-class Slider(obj_template.T):
 
+class Slider(obj_template.T):
     def Move(self, direct, velocity=1):
         delta = direct * velocity
         self.rect.centery -= delta
