@@ -61,7 +61,7 @@ def main():
                KeyControl(event)
 
      for ball in initgame.BALLS:
-          ball.Live(initgame.SLIDERS, initgame.POSTS)
+          ball.Live(initgame.SLIDERS.sprites(), initgame.POSTS.sprites())
 
      initgame.SPRITES.add(initgame.SPARKLES)
 

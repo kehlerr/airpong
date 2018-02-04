@@ -1,14 +1,13 @@
 #!/usr/bin/python
 
-import pygame
-import os
-from field_defs import *
 from color_defs import *
 from post import *
 from net  import *
 
 BORDER_HEIGHT = 20 
 
+global POSTS
+POSTS = pygame.sprite.Group([])
 
 class Field:
      
@@ -46,11 +45,10 @@ class Field:
 
           Net(self.FieldSfce, 0, 0, NET_SIZE, FIELD_H)
           Net(self.FieldSfce, FIELD_W - NET_SIZE+1, 0, NET_SIZE, FIELD_H)
-          Post(self.FieldSfce, self.FieldRect.right - NET_SIZE, self.FieldRect.top + POST_SIZE/2)
-          Post(self.FieldSfce, self.FieldRect.left  + NET_SIZE, self.FieldRect.top + POST_SIZE/2)
-          Post(self.FieldSfce, self.FieldRect.left  + NET_SIZE, self.FieldRect.bottom - POST_SIZE/2)
-          Post(self.FieldSfce, self.FieldRect.right - NET_SIZE, self.FieldRect.bottom - POST_SIZE/2)
-          #Post(self.FieldSfce, self.FieldRect.centerx+22, 310)
-          #Post(self.FieldSfce, self.FieldRect.centerx, 450)
+          Post(POST_IMAGE, (POST_SIZE, ), (self.FieldRect.right - NET_SIZE, self.FieldRect.top + POST_SIZE/2), POSTS, self.FieldSfce)
+          Post(POST_IMAGE, (POST_SIZE, ), (self.FieldRect.left  + NET_SIZE, self.FieldRect.top + POST_SIZE/2), POSTS, self.FieldSfce)
+          Post(POST_IMAGE, (POST_SIZE, ), (self.FieldRect.left  + NET_SIZE, self.FieldRect.bottom - POST_SIZE/2), POSTS, self.FieldSfce)
+          Post(POST_IMAGE, (POST_SIZE, ), (self.FieldRect.right - NET_SIZE, self.FieldRect.bottom - POST_SIZE/2), POSTS, self.FieldSfce)
+
           
 

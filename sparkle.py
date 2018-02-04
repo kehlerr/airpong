@@ -1,4 +1,4 @@
-import pygame
+import obj_template
 import math
 
 SPARKLE_SIZE = 6
@@ -7,30 +7,24 @@ SPARKLE_VEL = 5
 SPARKLE_ANG = 45
 SPARKLE_DANG = 15
 
-SPARKLES = pygame.sprite.RenderPlain([])
 
-class Sparkle(pygame.sprite.Sprite):
-     def __init__( self, 
-                   sfce, 
-                   pos_x, 
-                   pos_y,
-                   ang  = SPARKLE_ANG,
+class Sparkle(obj_template.T):
+     def __init__( self,
+                   spr_img,
+                   pos,
+                   size = SPARKLE_SIZE,
+                   ang = SPARKLE_ANG,
                    dang = SPARKLE_DANG,
-                   size = SPARKLE_SIZE, 
-                   ttl  = SPARKLE_TTL,
-                   vel  = SPARKLE_VEL ):
+                   ttl = SPARKLE_TTL,
+                   vel = SPARKLE_VEL,
+                   group = None
+                 ):
 
-          pygame.sprite.Sprite.__init__(self)
-          self.sfce = sfce
-          image = pygame.image.load('pic/sparkle4.png')
-          self.image = pygame.transform.scale(image, (size, size))
-          self.rect  = self.image.get_rect()
-          self.rect.center = pos_x, pos_y
+          obj_template.T.__init__(self, spr_img, (size, ), pos, group)
           self.ttl = ttl
           self.vel = vel
           self.ang = ang
           self.dang = dang
-          SPARKLES.add(self)
 
      def Live(self):
           if self.ttl > 0:
