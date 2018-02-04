@@ -1,6 +1,6 @@
 import pygame
 from common import X, Y
-
+from color_defs import WHITE
 
 class T(pygame.sprite.Sprite):
     def __init__(self, spr_img, size, pos, group=None, sfce=None):
@@ -18,7 +18,7 @@ class T(pygame.sprite.Sprite):
             height = size[Y] if len(size) > 1 else size[X]
             self.image = pygame.transform.scale(self.image, (width, height))
 
-#       self.image.set_colorkey(BLACK)
+#        self.image.set_colorkey(WHITE)
 #       self.mask = pygame.mask.from_surface(self.image)
 
         self.rect = self.image.get_rect()

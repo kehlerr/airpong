@@ -54,7 +54,7 @@ class Ball(obj_template.T):
               if collision is WITHSLIDER:
                    if self.vel < self.max_vel: self.vel += self.delta_vel
                    for i in range(30):
-                        Sparkle('pic/ball_blue.png', (self.rect.centerx, self.rect.centery), ang=(randint(-180, 180)), group=SPARKLES)
+                        Sparkle(SPARKLE_IMG, (self.rect.centerx, self.rect.centery), ang=(randint(-180, 180)), group=SPARKLES)
          else:
               self.rect.centerx += self.dx
               self.rect.centery += self.dy
