@@ -6,12 +6,8 @@ from post import *
 from net  import *
 from line import *
 
-#global POSTS
-POSTS = pygame.sprite.Group([])
-
 
 class Field:
-     
     def __init__(self, sfce, width = FIELD_W, height = FIELD_H):
          self.sfce = sfce
          self.FieldSfce = pygame.Surface((width, height))
@@ -20,6 +16,7 @@ class Field:
          self.bkgImg = pygame.transform.scale(self.bkgImg, (width, height))
          self.height = height
          self.width  = width
+         self.posts = pygame.sprite.Group([])
          self.draw()
          self.bkgImg.blit(self.FieldSfce, (0,0))
          self.sfce.blit(self.bkgImg, (0,0))
@@ -36,10 +33,10 @@ class Field:
         Line(GOAL_LINE_IMG, (self.FieldRect.right-NET_SIZE, self.FieldRect.centery), (0, 0), self.FieldSfce)
         Net(self.FieldSfce, 0, 0, NET_SIZE, FIELD_H)
         Net(self.FieldSfce, FIELD_W - NET_SIZE+1, 0, NET_SIZE, FIELD_H)
-        Post(POST_IMG, (POST_SIZE, ), (POST_RIGHT_X, POST_TOP_Y), POSTS, self.FieldSfce)
-        Post(POST_IMG, (POST_SIZE, ), (POST_LEFT_X, POST_TOP_Y), POSTS, self.FieldSfce)
-        Post(POST_IMG, (POST_SIZE, ), (POST_LEFT_X, POST_BOT_Y), POSTS, self.FieldSfce)
-        Post(POST_IMG, (POST_SIZE, ), (POST_RIGHT_X, POST_BOT_Y), POSTS, self.FieldSfce)
+        Post(POST_IMG, (POST_SIZE, ), (POST_RIGHT_X, POST_TOP_Y), self.posts, self.FieldSfce)
+        Post(POST_IMG, (POST_SIZE, ), (POST_LEFT_X, POST_TOP_Y), self.posts, self.FieldSfce)
+        Post(POST_IMG, (POST_SIZE, ), (POST_LEFT_X, POST_BOT_Y), self.posts, self.FieldSfce)
+        Post(POST_IMG, (POST_SIZE, ), (POST_RIGHT_X, POST_BOT_Y), self.posts, self.FieldSfce)
 
 
 

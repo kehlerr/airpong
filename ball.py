@@ -18,9 +18,6 @@ ANG_HIST_MAX = 75
 ANG_RND_DISP_MAX = 3
 WITHSLIDER = 2
 
-SPARKLES = pygame.sprite.RenderPlain([])
-
-
 
 class Ball(obj_template.T):
     def __init__(self,
@@ -43,10 +40,11 @@ class Ball(obj_template.T):
          self.vel = start_vel
          self.max_vel   = max_vel
          self.delta_vel = delta_vel
+         self.sparkles = pygame.sprite.RenderPlain([])
 
     def Live(self, sliders, posts):
          self.Move(sliders, posts)
-         for sparkle in SPARKLES:
+         for sparkle in self.sparkles:
               sparkle.Live()
 # TODO: [ref] привести в порядок функцию:
     def HandleCol(self, collision):
@@ -54,7 +52,7 @@ class Ball(obj_template.T):
               if collision is WITHSLIDER:
                    if self.vel < self.max_vel: self.vel += self.delta_vel
                    for i in range(30):
-                        Sparkle(SPARKLE_IMG, (self.rect.centerx, self.rect.centery), ang=(randint(-180, 180)), group=SPARKLES)
+                        Sparkle(SPARKLE_IMG, (self.rect.centerx, self.rect.centery), ang=(randint(-180, 180)), group=self.sparkles)
          else:
               self.rect.centerx += self.dx
               self.rect.centery += self.dy

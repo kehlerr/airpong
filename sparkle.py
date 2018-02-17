@@ -2,8 +2,8 @@ import obj_template
 import math
 import pygame
 
-SPARKLE_SIZE = 20
-SPARKLE_TTL = 60
+SPARKLE_SIZE = 7
+SPARKLE_TTL = 30
 SPARKLE_VEL = 5
 SPARKLE_ANG = 45
 SPARKLE_DANG = 15
@@ -26,17 +26,12 @@ class Sparkle(obj_template.T):
         self.vel = vel
         self.ang = ang
         self.dang = dang
-        self.alpha = 100
-        temp = pygame.Surface(self.size, self.size).convert()
-
 
     def Live(self):
         if self.ttl > 0:
             self.Move()
             self.ttl -= 1
-            self.alpha -= 5
-            self.image.set_alpha(self.alpha)
-            if self.vel > 0: self.vel -= 0.4
+            self.vel -= 0.4
         else:
             self.kill()
             del self
