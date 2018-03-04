@@ -1,6 +1,7 @@
 import obj_template
 from obj_template import X, Y
 
+
 class Line(obj_template.T):
         def __init__(self,
                      spr_img,

@@ -1,11 +1,13 @@
 #!/usr/bin/python
 
 from pygame.locals import *
+
+from ball import *
 from field import *
 from scoreboard import *
 from slider import *
-from ball import *
-
+from common import *
+from phys_defs import UP, DOWN
 
 class Battle:
     def __init__(self, display):
@@ -18,13 +20,13 @@ class Battle:
         self.sliders = pygame.sprite.Group([])
         self.u_slider = Slider('pic/slider_red.png', (SLIDER_W, SLIDER_H), (L_GOAL_LINE + SLIDER_DISTX, 100), self.sliders)
         self.b_slider = Slider('pic/slider_blue.png', (SLIDER_W, SLIDER_H), (R_GOAL_LINE - SLIDER_DISTX, 100), self.sliders)
-        Ball('pic/ball_blue.png', self.field.FieldSfce, (440,330), self.balls)
+        Ball('pic/ball_blue.png', self.field.field_sfce, (440,330), self.balls)
         self.sprites = pygame.sprite.RenderPlain(self.balls, self.sliders)
         self.control_accel = 1
 
     def update(self, loop):
         for sprite in self.sprites:
-            self.display.blit(self.field.FieldSfce, sprite.rect, sprite.rect)
+            self.display.blit(self.field.field_sfce, sprite.rect, sprite.rect)
 
         loop()
 
@@ -42,15 +44,15 @@ class Battle:
         if event.type == KEYDOWN:
             is_pressed = pygame.key.get_pressed()
             if self.control_accel < 15: self.control_accel += 0.75
-            if is_pressed[K_w]: self.u_slider.Move(UP, self.control_accel)
-            if is_pressed[K_s]: self.u_slider.Move(DOWN, self.control_accel)
+            if is_pressed[K_w]: self.u_slider.move(UP, self.control_accel)
+            if is_pressed[K_s]: self.u_slider.move(DOWN, self.control_accel)
 # TODO [low] delete this in future
-            if is_pressed[K_UP]: self.b_slider.Move(UP, self.control_accel)
-            if is_pressed[K_DOWN]: self.b_slider.Move(DOWN, self.control_accel)
+            if is_pressed[K_UP]: self.b_slider.move(UP, self.control_accel)
+            if is_pressed[K_DOWN]: self.b_slider.move(DOWN, self.control_accel)
         elif event.type == KEYUP:
             self.control_accel = 1
         elif event.type == MOUSEMOTION:
-            self.u_slider.Move(pygame.mouse.get_pos()[Y])
+            self.u_slider.move(pygame.mouse.get_pos()[Y])
         elif event.type == USEREVENT:
             event_info = event.__dict__
             if 'collision' in event_info:

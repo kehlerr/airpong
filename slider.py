@@ -6,10 +6,12 @@ from field_defs  import *
 
 
 class Slider(obj_template.T):
-    def Move(self, direct, speed=None):
+    def move(self, direct, speed=None):
         if not speed:
             self.rect.centery = direct
         else:
             self.rect.centery -= direct * speed
-        if self.rect.top < 0: self.rect.top = 0
-        if self.rect.bottom > FIELD_H: self.rect.bottom = FIELD_H
+        if self.rect.top < 0:
+            self.rect.top = 0
+        if self.rect.bottom > FIELD_H:
+            self.rect.bottom = FIELD_H

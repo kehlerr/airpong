@@ -1,11 +1,12 @@
 #!/usr/bin/python 
 
-from common import *
 from functools import wraps
 from sys import exit
+
 from pygame.locals import *
 
 import initgame
+from common import *
 
 
 def main_wrapp(loop):

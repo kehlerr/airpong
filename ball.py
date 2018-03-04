@@ -1,29 +1,15 @@
 #!/usr/bin/python
 # --*- coding: utf-8 -*-
 
-import math
+import pygame
+
 from collections import deque
 from random import randint
 from numpy import sign
 
-import pygame
-import obj_template
-import field
+from ball_defs import *
 from field_defs import *
-from slider_defs import SLIDER_H, SLIDER_W
-from ball_defs  import *
-from phys_defs  import *
-from color_defs  import *
 from sparkle import *
-
-
-ANG_HIST_MAX=75
-ANG_RND_DISP_MAX=3
-WITH_SLIDER='slider'
-WITH_LINE_LEFT='line_left'
-WITH_LINE_RIGHT='line_right'
-WITH_GOAL_LEFT='goal_left'
-WITH_GOAL_RIGHT='goal_right'
 
 
 class Ball(obj_template.T):
@@ -52,7 +38,7 @@ class Ball(obj_template.T):
     def Live(self, sliders, posts, goals):
          self.Move(sliders, posts, goals)
          for sparkle in self.sparkles:
-              sparkle.Live()
+              sparkle.live()
 # TODO: [ref] привести в порядок функцию:
     def HandleCol(self, collision):
          if collision:
@@ -119,20 +105,22 @@ class Ball(obj_template.T):
         if self.rect.left + self.dx < L_GOAL_LINE:
             self.rect.left = L_GOAL_LINE
             self.ang = math.degrees(math.pi) - self.ang
+
             is_goal = self.rect.top + self.dy > Goals[1].rect.top and self.rect.bottom + self.dy < Goals[1].rect.bottom
             if is_goal:
                 return WITH_GOAL_LEFT
+
             return True
 
         if self.rect.right + self.dx > R_GOAL_LINE:
             self.rect.right = R_GOAL_LINE
             self.ang = math.degrees(math.pi) - self.ang
-            is_goal = (self.rect.top + self.dy > Goals[0].rect.top and self.rect.bottom + self.dy < Goals[0].rect.bottom)
 
+            is_goal = (self.rect.top + self.dy > Goals[0].rect.top and self.rect.bottom + self.dy < Goals[0].rect.bottom)
             if is_goal:
                 return WITH_GOAL_RIGHT
-            return True
 
+            return True
 
         # столкновения со штангами
         for post in Posts:
