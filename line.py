@@ -6,8 +6,8 @@ class Line(obj_template.T):
                      spr_img,
                      pos,
                      size,
-                     sfce,
-                     group=None
+                     group=None,
+                     sfce=None
                      ):
 
             obj_template.T.__init__(self, spr_img, size, (pos[X]+size[X]/2, pos[Y]+size[Y]/2), group, sfce)

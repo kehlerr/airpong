@@ -10,9 +10,9 @@ from ball import *
 class Battle:
     def __init__(self, display):
         self.display = display
+        self.scoreboard = ScoreBoard('pic/scoreboard.png', (200, 600), (900, 300), self.display)
         self.field = Field(self.display)
         self.score = (0, 0)
-        self.scoreboard = ScoreBoard('pic/scoreboard.png', (200, 600), (900, 300), self.display)
         self.update_score()
         self.balls = pygame.sprite.Group([])
         self.sliders = pygame.sprite.Group([])
@@ -35,7 +35,7 @@ class Battle:
 
     def play(self):
         for ball in self.balls:
-            ball.Live(self.sliders.sprites(), self.field.posts.sprites())
+            ball.Live(self.sliders.sprites(), self.field.posts.sprites(), self.field.goals.sprites())
             self.sprites.add(ball.sparkles)
 
     def handle_event(self, event):

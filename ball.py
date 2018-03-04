@@ -8,6 +8,7 @@ from numpy import sign
 
 import pygame
 import obj_template
+import field
 from field_defs import *
 from slider_defs import SLIDER_H, SLIDER_W
 from ball_defs  import *
@@ -19,6 +20,8 @@ from sparkle import *
 ANG_HIST_MAX=75
 ANG_RND_DISP_MAX=3
 WITH_SLIDER='slider'
+WITH_LINE_LEFT='line_left'
+WITH_LINE_RIGHT='line_right'
 WITH_GOAL_LEFT='goal_left'
 WITH_GOAL_RIGHT='goal_right'
 
@@ -46,8 +49,8 @@ class Ball(obj_template.T):
          self.delta_vel = delta_vel
          self.sparkles = pygame.sprite.RenderPlain([])
 
-    def Live(self, sliders, posts):
-         self.Move(sliders, posts)
+    def Live(self, sliders, posts, goals):
+         self.Move(sliders, posts, goals)
          for sparkle in self.sparkles:
               sparkle.Live()
 # TODO: [ref] привести в порядок функцию:
@@ -66,13 +69,13 @@ class Ball(obj_template.T):
               self.rect.centery += self.dy
 
 
-    def Move(self, sliders, posts):
+    def Move(self, sliders, posts, goals):
     # движение мяча; sliders - возможные слайдеры (лист), posts - возможные штанги (лист)
     # расчет смещений
          self.dx = int(math.ceil(self.vel*math.cos(math.radians(self.ang))))
          self.dy = int(math.ceil(self.vel*math.sin(math.radians(self.ang))))
     # проверка и обработка столкновений
-         self.HandleCol(self.ChkCollision(sliders, posts))
+         self.HandleCol(self.ChkCollision(sliders, posts, goals))
 
          self.ang_hist.popleft()
          self.ang_hist.append(math.ceil(math.fabs(int(self.ang))))
@@ -103,61 +106,69 @@ class Ball(obj_template.T):
 
         return zip(DX, DY)
 
-    def ChkCollision(self, Sliders = None, Posts = None):
-    # проверяем на столкновения с объектами и границами, Sliders - лист, Posts - лист; возвращает bool
+    def ChkCollision(self, Sliders=None, Posts=None, Goals=None):
+        # проверяем на столкновения с объектами и границами, Sliders - лист, Posts - лист; возвращает bool
 
-         # границы сверху и снизу
-         if math.fabs(FIELD_H/2 - (self.rect.centery + self.dy)) > FIELD_H/2:
-              self.rect.centery = self.rad if self.rect.centery + self.dy < FIELD_H/2 else FIELD_H - self.rad
-              self.ang *= -1
-              return True
+        # границы сверху и снизу
+        if math.fabs(FIELD_H/2 - (self.rect.centery + self.dy)) > FIELD_H/2:
+            self.rect.centery = self.rad if self.rect.centery + self.dy < FIELD_H/2 else FIELD_H - self.rad
+            self.ang *= -1
+            return True
 
-         # боковые границы
-         if   self.rect.left + self.dx < L_GOAL_LINE:
-              self.rect.left = L_GOAL_LINE
-              self.ang = math.degrees(math.pi) - self.ang
-              return WITH_GOAL_LEFT
+        # боковые границы
+        if self.rect.left + self.dx < L_GOAL_LINE:
+            self.rect.left = L_GOAL_LINE
+            self.ang = math.degrees(math.pi) - self.ang
+            is_goal = self.rect.top + self.dy > Goals[1].rect.top and self.rect.bottom + self.dy < Goals[1].rect.bottom
+            if is_goal:
+                return WITH_GOAL_LEFT
+            return True
 
-         if   self.rect.right + self.dx > R_GOAL_LINE:
-              self.rect.right = R_GOAL_LINE
-              self.ang = math.degrees(math.pi) - self.ang
-              return WITH_GOAL_RIGHT
+        if self.rect.right + self.dx > R_GOAL_LINE:
+            self.rect.right = R_GOAL_LINE
+            self.ang = math.degrees(math.pi) - self.ang
+            is_goal = (self.rect.top + self.dy > Goals[0].rect.top and self.rect.bottom + self.dy < Goals[0].rect.bottom)
 
-         # столкновения со штангами
-         for post in Posts:
-              if math.sqrt((post.rect.centerx - self.rect.centerx) ** 2 + (post.rect.centery - self.rect.centery) ** 2) < self.rad + post.size/2:
-                   self.GetRound(post.rect.centerx, post.rect.centery, post.size/2)
-                   return True
+            if is_goal:
+                return WITH_GOAL_RIGHT
+            return True
 
-         # столкновения со слайдерами
-         for slider in Sliders:
-              slider_xl = slider.rect.left
-              slider_xr = slider.rect.right
-              slider_xc = slider.rect.centerx
-              slider_yt = slider.rect.top + slider.width/2
-              slider_yb = slider.rect.bottom - slider.width/2
 
-              if (self.rect.centerx < slider_xr and self.rect.centerx > slider_xl and self.rect.bottom>slider.rect.top and self.rect.top<slider.rect.bottom or self.ChkIntersect(slider)):
+        # столкновения со штангами
+        for post in Posts:
+            if math.sqrt((post.rect.centerx - self.rect.centerx) ** 2 + (post.rect.centery - self.rect.centery) ** 2) < self.rad + post.size/2:
+                self.GetRound(post.rect.centerx, post.rect.centery, post.size/2)
+                return True
 
-                  for (dx, dy) in self.ShiftVectors(slider.width/2, slider.height/2):
-                       self.rect.centerx += dx
-                       self.rect.centery += dy
-                       collision = pygame.sprite.collide_mask(self, slider)
-                       if collision:
-                           if ( self.rect.centery >= slider_yt  and
-                                self.rect.centery <= slider_yb ):
-                               self.rect.centerx = slider_xc - sign(self.dx)*(slider.width/2 + self.rad)
-                               self.ang = math.degrees(math.pi) - self.ang
-                           elif self.rect.centery < slider_yt:
-                               self.GetRound(slider_xc, slider_yt, slider.width/2)
-                           elif self.rect.centery > slider_yb:
-                               self.GetRound(slider_xc, slider_yb, slider.width/2)
-                           return WITH_SLIDER
+        # столкновения со слайдерами
+        for slider in Sliders:
+            slider_xl = slider.rect.left
+            slider_xr = slider.rect.right
+            slider_xc = slider.rect.centerx
+            slider_yt = slider.rect.top + slider.width/2
+            slider_yb = slider.rect.bottom - slider.width/2
 
-                  self.rect.centerx -= self.dx
-                  self.rect.centery -= self.dy
+            if (self.rect.centerx < slider_xr and self.rect.centerx > slider_xl and self.rect.bottom>slider.rect.top and self.rect.top<slider.rect.bottom or self.ChkIntersect(slider)):
 
-         return False
+                for (dx, dy) in self.ShiftVectors(slider.width/2, slider.height/2):
+                    self.rect.centerx += dx
+                    self.rect.centery += dy
+                    collision = pygame.sprite.collide_mask(self, slider)
+                    if collision:
+                        if ( self.rect.centery >= slider_yt  and
+                                     self.rect.centery <= slider_yb ):
+                            self.rect.centerx = slider_xc - sign(self.dx)*(slider.width/2 + self.rad)
+                            self.ang = math.degrees(math.pi) - self.ang
+                        elif self.rect.centery < slider_yt:
+                            self.GetRound(slider_xc, slider_yt, slider.width/2)
+                        elif self.rect.centery > slider_yb:
+                            self.GetRound(slider_xc, slider_yb, slider.width/2)
+                        return WITH_SLIDER
+
+                self.rect.centerx -= self.dx
+                self.rect.centery -= self.dy
+
+        return False
 
 
     def ChkIntersect(self, slider):
@@ -181,11 +192,11 @@ class Ball(obj_template.T):
         y2 = self.rect.centery + self.dy
         ball_p2 = (x2, y2)
 
-        x3 = slider.rect.centerx - sign(self.dx)*slider.width/2
+        x3 = slider.rect.centerx - sign(self.dx)*slider.rect.width/2
         y3 = slider.rect.top
         slider_p1 = (x3, y3)
 
-        x4 = slider.rect.centerx - sign(self.dx)*slider.width/2
+        x4 = slider.rect.centerx - sign(self.dx)*slider.rect.width/2
         y4 = slider.rect.bottom
         slider_p2 = (x4, y4)
 

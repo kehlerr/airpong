@@ -32,6 +32,9 @@ class T(pygame.sprite.Sprite):
     def __del__(self):
         self.kill()
 
+    def draw(self):
+        self.sfce.blit(self.image, self.rect)
+
     def move(self, dx=0, dy=0):
         self.rect.move(dx,dy)
 

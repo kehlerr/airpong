@@ -19,10 +19,11 @@ POST_LEFT_X = L_GOAL_LINE
 POST_TOP_Y = POST_OFFSET_Y
 POST_RIGHT_X = R_GOAL_LINE
 # TODO: make this sprite better
+BKG_IMG = 'pic/bkg11.jpg'
 POST_IMG = 'pic/post.png'
 BORDER_TOP_IMG = 'pic/border_top.png'
 BORDER_BOT_IMG = 'pic/border_bot.png'
+BORDER_SIDE_IMG = 'pic/border_side.png'
 CENTER_LINE_IMG = 'pic/center_line.png'
-# TODO: make this sprite better
 GOAL_LINE_IMG = 'pic/goal_line.png'
 
