@@ -7,7 +7,7 @@ import battle
 
 
 def initwindow((width, height), title):
-     #pygame.init()
+    # pygame.init()
     CLOCK = pygame.time.Clock()
     display = pygame.display.set_mode((width, height))
     pygame.display.set_caption(title)

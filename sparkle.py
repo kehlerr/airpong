@@ -33,8 +33,7 @@ class Sparkle(obj_template.T):
             self.ttl -= 1
             self.vel -= 0.4
         else:
-            self.kill()
-            del self
+            self.__del__()
 
     def Move(self):
         self.rect.x -= self.vel*math.cos(math.radians(self.ang))

@@ -29,6 +29,9 @@ class T(pygame.sprite.Sprite):
             self.sfce = sfce
             self.sfce.blit(self.image, self.rect)
 
+    def __del__(self):
+        self.kill()
+
     def move(self, dx=0, dy=0):
         self.rect.move(dx,dy)
 

@@ -1,22 +1,26 @@
 #!/usr/bin/python
 # --*- coding: utf-8 -*-
 
-import pygame, math
+import math
 from collections import deque
 from random import randint
 from numpy import sign
+
+import pygame
+import obj_template
 from field_defs import *
 from slider_defs import SLIDER_H, SLIDER_W
 from ball_defs  import *
 from phys_defs  import *
 from color_defs  import *
 from sparkle import *
-import obj_template
 
 
-ANG_HIST_MAX = 75
-ANG_RND_DISP_MAX = 3
-WITHSLIDER = 2
+ANG_HIST_MAX=75
+ANG_RND_DISP_MAX=3
+WITH_SLIDER='slider'
+WITH_GOAL_LEFT='goal_left'
+WITH_GOAL_RIGHT='goal_right'
 
 
 class Ball(obj_template.T):
@@ -30,7 +34,7 @@ class Ball(obj_template.T):
                  start_vel = BALL_SPEED,
                  max_vel   = MAX_BALL_SPEED,
                  delta_vel = BALL_DELTA_VEL
-                 ):
+                ):
 
          obj_template.T.__init__(self, spr_img, (size, ), pos, group)
          self.bkgImg = bkgImg
@@ -49,10 +53,14 @@ class Ball(obj_template.T):
 # TODO: [ref] привести в порядок функцию:
     def HandleCol(self, collision):
          if collision:
-              if collision is WITHSLIDER:
+              if collision is WITH_SLIDER:
                    if self.vel < self.max_vel: self.vel += self.delta_vel
                    for i in range(30):
                         Sparkle(SPARKLE_IMG, (self.rect.centerx, self.rect.centery), ang=(randint(-180, 180)), group=self.sparkles)
+              elif collision is WITH_GOAL_LEFT:
+                   pygame.event.post(pygame.event.Event(pygame.USEREVENT, {'collision':WITH_GOAL_LEFT}))
+              elif collision is WITH_GOAL_RIGHT:
+                   pygame.event.post(pygame.event.Event(pygame.USEREVENT, {'collision':WITH_GOAL_RIGHT}))
          else:
               self.rect.centerx += self.dx
               self.rect.centery += self.dy
@@ -108,12 +116,12 @@ class Ball(obj_template.T):
          if   self.rect.left + self.dx < L_GOAL_LINE:
               self.rect.left = L_GOAL_LINE
               self.ang = math.degrees(math.pi) - self.ang
-              return True
+              return WITH_GOAL_LEFT
 
          if   self.rect.right + self.dx > R_GOAL_LINE:
               self.rect.right = R_GOAL_LINE
               self.ang = math.degrees(math.pi) - self.ang
-              return True
+              return WITH_GOAL_RIGHT
 
          # столкновения со штангами
          for post in Posts:
@@ -144,7 +152,7 @@ class Ball(obj_template.T):
                                self.GetRound(slider_xc, slider_yt, slider.width/2)
                            elif self.rect.centery > slider_yb:
                                self.GetRound(slider_xc, slider_yb, slider.width/2)
-                           return WITHSLIDER
+                           return WITH_SLIDER
 
                   self.rect.centerx -= self.dx
                   self.rect.centery -= self.dy
