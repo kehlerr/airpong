@@ -7,6 +7,7 @@ from field import *
 from scoreboard import *
 from slider import *
 from common import *
+
 from phys_defs import UP, DOWN
 
 class Battle:
