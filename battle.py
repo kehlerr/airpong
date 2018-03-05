@@ -21,7 +21,7 @@ class Battle:
         self.sliders = pygame.sprite.Group([])
         self.u_slider = Slider('pic/slider_red.png', (SLIDER_W, SLIDER_H), (L_GOAL_LINE + SLIDER_DISTX, 100), self.sliders)
         self.b_slider = Slider('pic/slider_blue.png', (SLIDER_W, SLIDER_H), (R_GOAL_LINE - SLIDER_DISTX, 100), self.sliders)
-        Ball('pic/ball_blue.png', self.field.field_sfce, (440,330), self.balls)
+        Ball('pic/ball_blue.png', self.field.field_sfce, self.field.rect.center, self.balls)
         self.sprites = pygame.sprite.RenderPlain(self.balls, self.sliders)
         self.control_accel = 1
 
@@ -61,6 +61,7 @@ class Battle:
                     self.update_score((0, 1))
                 if event_info['collision'] == WITH_GOAL_RIGHT:
                     self.update_score((1, 0))
+                pygame.time.delay(200)
 
     def update_score(self, d_score=None):
         if d_score:

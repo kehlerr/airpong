@@ -28,8 +28,10 @@ class Ball(obj_template.T):
          obj_template.T.__init__(self, spr_img, (size, ), pos, group)
          self.bkgImg = bkgImg
          self.rad = self.size
+         self.start_ang = start_ang
          self.ang = start_ang
          self.ang_hist = deque([start_ang for i in range(ANG_HIST_MAX)], ANG_HIST_MAX)
+         self.start_vel = start_vel
          self.vel = start_vel
          self.max_vel   = max_vel
          self.delta_vel = delta_vel
@@ -39,6 +41,20 @@ class Ball(obj_template.T):
          self.Move(sliders, posts, goals)
          for sparkle in self.sparkles:
               sparkle.live()
+
+    def put(self, pos=None, ang=None, vel=None):
+        obj_template.T.put(self, pos)
+        if ang:
+            self.ang = ang
+        elif hasattr(self, 'ang'):
+            self.ang = self.ang
+
+        if vel:
+            self.vel = vel
+        elif hasattr(self, 'vel'):
+            self.vel = self.vel
+
+
 # TODO: [ref] привести в порядок функцию:
     def HandleCol(self, collision):
          if collision:
@@ -48,8 +64,10 @@ class Ball(obj_template.T):
                         Sparkle(SPARKLE_IMG, (self.rect.centerx, self.rect.centery), ang=(randint(-180, 180)), group=self.sparkles)
               elif collision is WITH_GOAL_LEFT:
                    pygame.event.post(pygame.event.Event(pygame.USEREVENT, {'collision':WITH_GOAL_LEFT}))
+                   self.put(ang=randint(-180, 180))
               elif collision is WITH_GOAL_RIGHT:
                    pygame.event.post(pygame.event.Event(pygame.USEREVENT, {'collision':WITH_GOAL_RIGHT}))
+                   self.put(ang=randint(-90, 90))
          else:
               self.rect.centerx += self.dx
               self.rect.centery += self.dy

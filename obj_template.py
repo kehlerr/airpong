@@ -26,7 +26,8 @@ class T(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.width = self.rect.width
         self.height = self.rect.height
-        self.moveto(pos)
+        self.start_pos = pos
+        self.put(pos=pos)
         if sfce is not None:
             self.sfce = sfce
             self.sfce.blit(self.image, self.rect)
@@ -42,3 +43,8 @@ class T(pygame.sprite.Sprite):
 
     def moveto(self, pos):
         self.rect.center = pos
+
+    def put(self, pos=None, rect=None):
+        self.moveto(pos if pos else self.start_pos)
+        if rect:
+            self.rect = rect
