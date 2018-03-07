@@ -3,6 +3,7 @@ import pygame
 from common import X, Y
 #from color_defs import WHITE
 
+# TODO [low]: добавить кроп имги
 
 class T(pygame.sprite.Sprite):
     def __init__(self, spr_img, size, pos, group=None, sfce=None):

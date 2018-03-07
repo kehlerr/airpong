@@ -18,7 +18,6 @@ POST_BOT_Y = FIELD_H - POST_OFFSET_Y
 POST_LEFT_X = L_GOAL_LINE
 POST_TOP_Y = POST_OFFSET_Y
 POST_RIGHT_X = R_GOAL_LINE
-# TODO: make this sprite better
 BKG_IMG = 'pic/bkg11.jpg'
 POST_IMG = 'pic/post.png'
 BORDER_TOP_IMG = 'pic/border_top.png'
