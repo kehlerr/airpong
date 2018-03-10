@@ -37,7 +37,7 @@ class Ball(obj_template.T):
          self.delta_vel = delta_vel
          self.sparkles = pygame.sprite.RenderPlain([])
 
-    def Live(self, sliders, posts, goals):
+    def update(self, sliders, posts, goals):
          self.Move(sliders, posts, goals)
          for sparkle in self.sparkles:
               sparkle.live()

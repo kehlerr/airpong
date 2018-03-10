@@ -16,8 +16,7 @@ def main_wrapp(loop):
     @wraps(loop)
     def decorated():
         while True:
-            CLOCK.tick(FPS)
-            battle.update(loop)
+            battle.update(loop, CLOCK.tick(FPS))
     return decorated
 
 
@@ -29,8 +28,6 @@ def main():
             exit()
         else:
             battle.handle_event(event)
-
-    battle.play()
 
 
 if __name__ == '__main__':
