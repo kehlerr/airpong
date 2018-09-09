@@ -37,7 +37,7 @@ class Ball(obj_template.T):
          self.vel = start_vel
          self.max_vel   = max_vel
          self.delta_vel = delta_vel
-         self.sparkles = Sparkles('pic/sparkle.png', group, thread)
+         self.sparkles_slider = Sparkles('pic/sparkle.png', group, thread)
          self.sparkles_post = Sparkles('pic/sparkle_post.png', group, thread)
 
     def update(self, sliders, posts, goals):
@@ -56,14 +56,13 @@ class Ball(obj_template.T):
             self.vel = self.vel
 
 
-# TODO: [ref] привести в порядок функцию:
     def HandleCol(self, collision):
          if collision:
               if collision is WITH_SLIDER:
-                   if self.vel < self.max_vel: self.vel += self.delta_vel
-                   self.sparkles.generate_sparkles(randint(MIN_SPARKLES_AMOUNT, MAX_SPARKLES_AMOUNT),(self.rect.centerx, self.rect.centery))
+                   self.vel += self.delta_vel if self.vel < self.max_vel else 0
+                   self.sparkles_slider.generate_sparkles(randint(MIN_SPARKLES_AMOUNT, MAX_SPARKLES_AMOUNT), self.rect.center)
               elif collision is WITH_POST:
-                   self.sparkles_post.generate_sparkles(randint(MIN_SPARKLES_AMOUNT, MAX_SPARKLES_AMOUNT),(self.rect.centerx, self.rect.centery))
+                   self.sparkles_post.generate_sparkles(randint(MIN_SPARKLES_AMOUNT, MAX_SPARKLES_AMOUNT), self.rect.center)
               elif collision is WITH_GOAL_LEFT:
                    pygame.event.post(pygame.event.Event(pygame.USEREVENT, {'collision':WITH_GOAL_LEFT}))
                    self.put(ang=randint(-180, 180))
@@ -71,9 +70,7 @@ class Ball(obj_template.T):
                    pygame.event.post(pygame.event.Event(pygame.USEREVENT, {'collision':WITH_GOAL_RIGHT}))
                    self.put(ang=randint(-90, 90))
          else:
-              self.rect.centerx += self.dx
-              self.rect.centery += self.dy
-
+             self.move(self.dx, self.dy)
 
     def Move(self, sliders, posts, goals):
     # движение мяча; sliders - возможные слайдеры (лист), posts - возможные штанги (лист)
@@ -233,8 +230,3 @@ class Ball(obj_template.T):
          self.rect.centerx = centerx + (rad + self.rad+5) * math.cos(ang_collide)
          self.rect.centery = centery + (rad + self.rad+5) * math.sin(ang_collide)
          self.ang = math.degrees((math.pi*2 + ang_collide) % (math.pi*2))
-#
-    def GenerateSparkles(self):
-        self.sparkles.generate_sparkles(randint(MIN_SPARKLES_AMOUNT, MAX_SPARKLES_AMOUNT), (self.rect.centerx, self.rect.centery))
- #           self.thread.add(Sparkle(SPARKLE_IMG, (self.rect.centerx, self.rect.centery), ang=(randint(-180, 180)),
-  #                                  group=self.sparkles))

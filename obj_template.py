@@ -44,7 +44,7 @@ class T(pygame.sprite.Sprite):
         self.sfce.blit(self.image, self.rect)
 
     def move(self, dx=0, dy=0):
-        self.rect.move(dx,dy)
+        self.rect.move_ip(dx, dy)
 
     def moveto(self, pos):
         self.rect.center = pos

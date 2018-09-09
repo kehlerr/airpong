@@ -30,7 +30,7 @@ class Field:
         Net('pic/net5.png', (NET_SIZE, FIELD_H), (FIELD_W - (NET_SIZE+1)/2, FIELD_H/2), self.field_sfce, (0, 0, NET_SIZE, FIELD_H))
         Line(BORDER_SIDE_IMG, (self.width-1, self.rect.centery), (0, 0), sfce=self.sfce)
         line_goalleft=Line(GOAL_LINE_IMG, (POST_LEFT_X, (POST_TOP_Y+POST_BOT_Y)/2), (0, 0), self.goals, self.field_sfce)
-        line_goalleft.rect = pygame.Rect(POST_LEFT_X - 1, POST_TOP_Y + POST_SIZE, 3, (POST_BOT_Y - POST_TOP_Y - POST_SIZE))
+        line_goalleft.rect = pygame.Rect(POST_LEFT_X-1, POST_TOP_Y + POST_SIZE/2, 3, (POST_BOT_Y - POST_TOP_Y - POST_SIZE))
 
         line_topleft=Line(BORDER_SIDE_IMG, (POST_LEFT_X, 0), (0, 0))
         line_topleft.rect.midbottom = (POST_LEFT_X, POST_TOP_Y)
@@ -40,7 +40,7 @@ class Field:
         self.field_sfce.blit(line_botleft.image, line_botleft.rect)
 
         line_goalright=Line(GOAL_LINE_IMG, (POST_RIGHT_X, (POST_TOP_Y+POST_BOT_Y)/2), (0, 0), self.goals, self.field_sfce)
-        line_goalright.rect = pygame.Rect(POST_RIGHT_X-1, POST_TOP_Y+POST_SIZE, 3, (POST_BOT_Y - POST_TOP_Y - POST_SIZE))
+        line_goalright.rect = pygame.Rect(POST_RIGHT_X-1, POST_TOP_Y+POST_SIZE/2, 3, (POST_BOT_Y - POST_TOP_Y - POST_SIZE))
 
         line_topright=Line(BORDER_SIDE_IMG, (POST_RIGHT_X, 0), (0, 0))
         line_topright.rect.midbottom = (POST_RIGHT_X, POST_TOP_Y)
