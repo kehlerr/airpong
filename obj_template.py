@@ -32,7 +32,7 @@ class T(pygame.sprite.Sprite):
         self.width = self.rect.width
         self.height = self.rect.height
         self.start_pos = pos
-        self.put(pos=pos)
+        self.put(pos)
         if sfce is not None:
             self.sfce = sfce
             self.sfce.blit(self.image, self.rect, crop_rect)

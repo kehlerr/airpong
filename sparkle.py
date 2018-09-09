@@ -23,21 +23,32 @@ class Sparkle(obj_template.T):
                 ):
         obj_template.T.__init__(self, spr_img, (size, ), pos, group)
         self.ttl = ttl
+        self.current_ttl = self.ttl
         self.vel = vel
+        self.current_vel = vel
         self.ang = ang
         self.dang = dang
 
     def process(self, dt):
-        if self.ttl > 0:
+        if self.current_ttl > 0:
             self.move()
-            self.ttl -= dt
-            self.vel -= 0
+            self.current_ttl -= dt
+            self.current_vel -= 0.5
             return True
         else:
-            self.__del__()
+            self.kill()
             return False
 
     def move(self):
         self.rect.x += self.vel*math.cos(math.radians(self.ang))
         self.rect.y += self.vel*math.sin(math.radians(self.ang))
         self.ang += self.dang
+
+    def put(self, pos, ang=None, rect=None):
+        obj_template.T.put(self, pos, rect)
+        self.ang = ang
+
+    def reborn(self, group):
+        self.add(group)
+        self.current_ttl = self.ttl
+        self.current_vel = self.vel
