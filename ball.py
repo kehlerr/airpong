@@ -17,6 +17,7 @@ class Ball(obj_template.T):
                  spr_img,
                  bkgImg,
                  pos,
+                 thread,
                  group = None,
                  size = BALL_RAD,
                  start_ang = 45,
@@ -30,17 +31,16 @@ class Ball(obj_template.T):
          self.rad = self.size
          self.start_ang = start_ang
          self.ang = start_ang
+         self.thread = thread
          self.ang_hist = deque([start_ang for i in range(ANG_HIST_MAX)], ANG_HIST_MAX)
          self.start_vel = start_vel
          self.vel = start_vel
          self.max_vel   = max_vel
          self.delta_vel = delta_vel
-         self.sparkles = pygame.sprite.RenderPlain([])
+         self.sparkles = group
 
     def update(self, sliders, posts, goals):
          self.Move(sliders, posts, goals)
-         for sparkle in self.sparkles:
-              sparkle.live()
 
     def put(self, pos=None, ang=None, vel=None):
         obj_template.T.put(self, pos)
@@ -60,8 +60,7 @@ class Ball(obj_template.T):
          if collision:
               if collision is WITH_SLIDER:
                    if self.vel < self.max_vel: self.vel += self.delta_vel
-                   for i in range(30):
-                        Sparkle(SPARKLE_IMG, (self.rect.centerx, self.rect.centery), ang=(randint(-180, 180)), group=self.sparkles)
+                   self.GenerateSparkles()
               elif collision is WITH_GOAL_LEFT:
                    pygame.event.post(pygame.event.Event(pygame.USEREVENT, {'collision':WITH_GOAL_LEFT}))
                    self.put(ang=randint(-180, 180))
@@ -111,7 +110,7 @@ class Ball(obj_template.T):
         return zip(DX, DY)
 
     def ChkCollision(self, Sliders=None, Posts=None, Goals=None):
-        # проверяем на столкновения с объектами и границами, Sliders - лист, Posts - лист; возвращает bool
+        # проверяем на столкновения с объектами и границами; bool
 
         # границы сверху и снизу
         if math.fabs(FIELD_H/2 - (self.rect.centery + self.dy)) > FIELD_H/2:
@@ -231,3 +230,8 @@ class Ball(obj_template.T):
          self.rect.centerx = centerx + (rad + self.rad+5) * math.cos(ang_collide)
          self.rect.centery = centery + (rad + self.rad+5) * math.sin(ang_collide)
          self.ang = math.degrees((math.pi*2 + ang_collide) % (math.pi*2))
+
+    def GenerateSparkles(self):
+        for i in range(randint(MIN_SPARKLES_AMOUNT, MAX_SPARKLES_AMOUNT)):
+            self.thread.add(Sparkle(SPARKLE_IMG, (self.rect.centerx, self.rect.centery), ang=(randint(-180, 180)),
+                                    group=self.sparkles))

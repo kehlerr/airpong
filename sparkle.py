@@ -3,10 +3,10 @@ import math
 import obj_template
 
 SPARKLE_SIZE = 7
-SPARKLE_TTL = 30
+SPARKLE_TTL = 300
 SPARKLE_VEL = 5
 SPARKLE_ANG = 45
-SPARKLE_DANG = 15
+SPARKLE_DANG = 10
 SPARKLE_IMG = 'pic/sparkle.png'
 
 
@@ -27,15 +27,17 @@ class Sparkle(obj_template.T):
         self.ang = ang
         self.dang = dang
 
-    def live(self):
+    def process(self, dt):
         if self.ttl > 0:
             self.move()
-            self.ttl -= 1
-            self.vel -= 0.4
+            self.ttl -= dt
+            self.vel -= 0
+            return True
         else:
             self.__del__()
+            return False
 
     def move(self):
-        self.rect.x -= self.vel*math.cos(math.radians(self.ang))
+        self.rect.x += self.vel*math.cos(math.radians(self.ang))
         self.rect.y += self.vel*math.sin(math.radians(self.ang))
         self.ang += self.dang
