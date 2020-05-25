@@ -4,7 +4,7 @@
 import pygame
 
 from collections import deque
-from random import randint
+from random import randint, random
 from numpy import sign
 
 from ball_defs import *
@@ -20,9 +20,9 @@ class Ball(obj_template.T):
                  thread,
                  group = None,
                  size = BALL_RAD,
-                 start_ang = 45,
                  start_vel = BALL_SPEED,
                  max_vel   = MAX_BALL_SPEED,
+                 start_ang = None,
                  delta_vel = BALL_DELTA_VEL
                 ):
 
@@ -30,9 +30,9 @@ class Ball(obj_template.T):
          self.bkgImg = bkgImg
          self.rad = self.size
          self.start_ang = start_ang
-         self.ang = start_ang
+         self.ang = start_ang or random()*randint(-1,1)*(2*math.pi)
          self.thread = thread
-         self.ang_hist = deque([start_ang for i in range(ANG_HIST_MAX)], ANG_HIST_MAX)
+         self.ang_hist = deque([start_ang for _ in range(ANG_HIST_MAX)], ANG_HIST_MAX)
          self.start_vel = start_vel
          self.vel = start_vel
          self.max_vel   = max_vel
@@ -40,8 +40,8 @@ class Ball(obj_template.T):
          self.sparkles_slider = Sparkles('pic/sparkle.png', group, thread)
          self.sparkles_post = Sparkles('pic/sparkle_post.png', group, thread)
 
-    def update(self, sliders, posts, goals):
-         self.Move(sliders, posts, goals)
+    def update(self, sliders, posts, goals, balls=None):
+         self.Move(sliders, posts, goals, balls)
 
     def put(self, pos=None, ang=None, vel=None):
         obj_template.T.put(self, pos)
@@ -72,13 +72,13 @@ class Ball(obj_template.T):
          else:
              self.move(self.dx, self.dy)
 
-    def Move(self, sliders, posts, goals):
+    def Move(self, sliders, posts, goals, balls):
     # движение мяча; sliders - возможные слайдеры (лист), posts - возможные штанги (лист)
     # расчет смещений
          self.dx = int(math.ceil(self.vel*math.cos(math.radians(self.ang))))
          self.dy = int(math.ceil(self.vel*math.sin(math.radians(self.ang))))
     # проверка и обработка столкновений
-         self.HandleCol(self.ChkCollision(sliders, posts, goals))
+         self.HandleCol(self.ChkCollision(sliders, posts, goals, balls))
 
          self.ang_hist.popleft()
          self.ang_hist.append(math.ceil(math.fabs(int(self.ang))))
@@ -109,7 +109,7 @@ class Ball(obj_template.T):
 
         return zip(DX, DY)
 
-    def ChkCollision(self, Sliders=None, Posts=None, Goals=None):
+    def ChkCollision(self, Sliders=None, Posts=None, Goals=None, Balls=None):
         # проверяем на столкновения с объектами и границами; bool
 
         # границы сверху и снизу
@@ -144,6 +144,13 @@ class Ball(obj_template.T):
             if math.sqrt((post.rect.centerx - self.rect.centerx) ** 2 + (post.rect.centery - self.rect.centery) ** 2) < self.rad + post.size/2:
                 self.GetRound(post.rect.centerx, post.rect.centery, post.size/2)
                 return WITH_POST
+
+        for ball in Balls:
+            if self.rect != ball.rect:
+                if math.sqrt((ball.rect.centerx - self.rect.centerx) ** 2 + (ball.rect.centery - self.rect.centery) ** 2) < self.rad + ball.rad:
+                    self.GetRound(ball.rect.centerx, ball.rect.centery, ball.rad)
+                    return WITH_BALL
+
 
         # столкновения со слайдерами
         for slider in Sliders:

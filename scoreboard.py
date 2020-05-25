@@ -37,10 +37,11 @@ class ScoreBoard(obj_template.T):
     def clear(self):
         if self.l_number:
             self.del_number(self.l_number)
+            self.l_number.clear()
         if self.r_number:
             self.del_number(self.r_number)
+            self.r_number.clear()
 
     def del_number(self, number):
         for d in number:
             self.sb_surface.blit(self.image, number[d].rect, number[d].rect)
-            number[d].__del__()

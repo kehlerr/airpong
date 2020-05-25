@@ -8,7 +8,7 @@ class Sparkles:
     def __init__(self, image, group, thread):
         self.group = group
         self.thread = thread
-        self.items = [Sparkle(image, (0, 0)) for i in range(MAX_SPARKLES_AMOUNT)]
+        self.items = [Sparkle(image, (0, 0)) for _ in range(MAX_SPARKLES_AMOUNT)]
 
     def generate_sparkles(self, amount, center_pos):
         for i in range(amount):

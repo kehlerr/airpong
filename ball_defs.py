@@ -11,6 +11,7 @@ WITH_LINE_RIGHT='line_right'
 WITH_GOAL_LEFT='goal_left'
 WITH_GOAL_RIGHT='goal_right'
 WITH_POST = 'post'
+WITH_BALL = 'ball'
 
 MIN_SPARKLES_AMOUNT = 60
 MAX_SPARKLES_AMOUNT = 80

@@ -14,6 +14,9 @@ from phys_defs import UP, DOWN
 
 PUTTING_BALL_WAIT = 500
 ONSTART_PUTTING_BALL_WAIT = 2000
+EV_MODIFY_BATTLE = pygame.USEREVENT + 1
+EV_CLEAR_MODIFICATIONS = EV_MODIFY_BATTLE + 1
+EV_PUT_BALL = pygame.USEREVENT + 3
 
 
 class Battle:
@@ -28,10 +31,14 @@ class Battle:
         self.u_slider = Slider('pic/slider_red.png', (SLIDER_W, SLIDER_H), (L_GOAL_LINE + SLIDER_DISTX, self.field.rect.centery), self.sprites)
         self.b_slider = Slider('pic/slider_blue.png', (SLIDER_W, SLIDER_H), (R_GOAL_LINE - SLIDER_DISTX, self.field.rect.centery), self.sprites)
         self.sliders = [self.u_slider, self.b_slider]
-        self.balls = [Ball('pic/ball_blue.png', self.field.field_sfce, self.field.rect.center, self.thread, self.sprites)]
+        self.main_ball = Ball('pic/ball_blue.png', self.field.field_sfce, self.field.rect.center, self.thread, self.sprites)
+        self.balls = [self.main_ball]
+        self.additional_balls = []
         self.control_accel = 1
-        self.time_put_ball = ONSTART_PUTTING_BALL_WAIT
-        self.state = 'need_wait_putting_ball'
+        self.state = 'need_wait_put_ball'
+        self.modified = False
+        pygame.time.set_timer(EV_MODIFY_BATTLE, 7000)
+        pygame.time.set_timer(EV_PUT_BALL, 1500)
 
     def update(self, loop, ticks):
         for sprite in self.sprites:
@@ -41,10 +48,10 @@ class Battle:
         self.thread.update(ticks)
 
         if self.check_state('play'):
-            for ball in self.balls:
-                ball.update(self.sliders, self.field.posts.sprites(), self.field.goals.sprites())
-        elif self.check_state('need_wait_putting_ball'):
-            self.thread.add_worker(self.wait_putting_ball)
+            self.process_balls()
+        elif self.check_state('need_wait_put_ball'):
+            self.update_state('waiting_put_ball')
+            pygame.time.set_timer(EV_PUT_BALL, 500)
         for sprite in self.sprites:
             self.display.blit(sprite.image, sprite.rect)
 
@@ -69,7 +76,15 @@ class Battle:
                     self.update_score((0, 1))
                 if event_info['collision'] == WITH_GOAL_RIGHT:
                     self.update_score((1, 0))
-                self.update_state('need_wait_putting_ball')
+                self.update_state('need_wait_put_ball')
+                self.clear_modifications()
+        elif event.type == EV_MODIFY_BATTLE:
+            self.modify()
+        elif event.type == EV_CLEAR_MODIFICATIONS:
+            self.clear_modifications()
+        elif event.type == EV_PUT_BALL:
+            self.update_state('play')
+            pygame.time.set_timer(EV_PUT_BALL, 0)
 
     def update_score(self, d_score=None):
         if d_score:
@@ -83,12 +98,24 @@ class Battle:
     def check_state(self, state):
         return self.state == state
 
-    def wait_putting_ball(self, dt):
-        self.time_put_ball -= dt
-        if self.time_put_ball < 0:
-            self.time_put_ball = PUTTING_BALL_WAIT
-            self.update_state('play')
-            return False
-        else:
-            self.update_state('waiting_putting_ball')
-            return True
+    def process_balls(self):
+        for ball in self.balls:
+            ball.update(self.sliders, self.field.posts.sprites(), self.field.goals.sprites(), self.balls)
+        return True
+
+    def modify(self):
+        if not self.modified:
+            self.modified = True
+            pygame.time.set_timer(EV_CLEAR_MODIFICATIONS, 10000)
+    
+    def clear_modifications(self):
+        if self.modified:
+            for ball in self.balls[1:]:
+                self.balls.remove(ball)
+                ball.kill()
+            self.modified = False
+            pygame.time.set_timer(EV_CLEAR_MODIFICATIONS, 0)
+
+    def add_ball_to_battle(self):
+        self.balls.append(Ball('pic/ball_blue.png', self.field.field_sfce, self.field.rect.center, self.thread, self.sprites))
+

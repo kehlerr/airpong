@@ -3,7 +3,7 @@ import math
 import obj_template
 
 SPARKLE_SIZE = 7
-SPARKLE_TTL = 300
+SPARKLE_TTL = 200
 SPARKLE_VEL = 5
 SPARKLE_ANG = 45
 SPARKLE_DANG = 10
