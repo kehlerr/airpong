@@ -1,239 +1,134 @@
-#!/usr/bin/python
-# --*- coding: utf-8 -*-
-
 import pygame
+import math
 
 from collections import deque
-from random import randint, random
+from random import randint
 from numpy import sign
 
-from ball_defs import *
-from field_defs import *
-from sparkles import *
+from round_object import RoundObject
+from ball_collision import CollisionWithVBorder, CollisionWithHBorder,\
+            CollisionWithGoal, CollisionWithRound, CollisionWithSlider
+from sparkles import Sparkles
+
+BALL_RAD = 20
+BALL_SPEED = 10
+MAX_BALL_SPEED = 35
+ZERO_MOVES_COUNT_MAX=5
+
+MIN_SPARKLES_AMOUNT = 60
+MAX_SPARKLES_AMOUNT = 80
 
 
-class Ball(obj_template.T):
-    def __init__(self,
-                 spr_img,
-                 bkgImg,
-                 pos,
-                 thread,
-                 group = None,
-                 size = BALL_RAD,
-                 start_vel = BALL_SPEED,
-                 max_vel   = MAX_BALL_SPEED,
-                 start_ang = None,
-                 delta_vel = BALL_DELTA_VEL
-                ):
+class Ball(RoundObject):
+    size = (BALL_RAD, BALL_RAD)
+    image_path = 'pic/ball_blue.png'
+    start_speed = BALL_SPEED
+    radius = BALL_RAD/2
 
-         obj_template.T.__init__(self, spr_img, (size, ), pos, group)
-         self.bkgImg = bkgImg
-         self.rad = self.size
-         self.start_ang = start_ang
-         self.ang = start_ang or random()*randint(-1,1)*(2*math.pi)
-         self.thread = thread
-         self.ang_hist = deque([start_ang for _ in range(ANG_HIST_MAX)], ANG_HIST_MAX)
-         self.start_vel = start_vel
-         self.vel = start_vel
-         self.max_vel   = max_vel
-         self.delta_vel = delta_vel
-         self.sparkles_slider = Sparkles('pic/sparkle.png', group, thread)
-         self.sparkles_post = Sparkles('pic/sparkle_post.png', group, thread)
+    def __init__(
+            self, background_surface, pos, group, collision_objects, thread,
+            image_path = None,
+            size = None,
+            angle = None
+        ):
+        super(Ball, self).__init__(
+            background_surface, pos, image_path, group, size, angle
+        )
+        self.thread = thread
+        self.angle = self.get_random_angle()
+        self.dang = 0
+        self.rotation = 0
+        self.zero_dx_count = ZERO_MOVES_COUNT_MAX
+        self.zero_dy_count = 0
+        self.speed = self.start_speed
+        self.collision = None
+        self.fill_collision_objects(collision_objects)
+        self.prepare_sparkles()
 
-    def update(self, sliders, posts, goals, balls=None):
-         self.Move(sliders, posts, goals, balls)
+    def reset(self):
+        self.speed = self.start_speed
+        self.dang = 0
+        self.rotation = 0
 
-    def put(self, pos=None, ang=None, vel=None):
-        obj_template.T.put(self, pos)
-        if ang:
-            self.ang = ang
-        elif hasattr(self, 'ang'):
-            self.ang = self.ang
+    def fill_collision_objects(self, collision_objects):
+        self.sliders = collision_objects.get('sliders', [])
+        self.posts = collision_objects.get('posts', [])
+        self.goals = collision_objects.get('goals', [])
+        self.balls = list(collision_objects.get('balls', []))
 
-        if vel:
-            self.vel = vel
-        elif hasattr(self, 'vel'):
-            self.vel = self.vel
+    def get_round_collision_objects(self):
+        return [*self.posts, *self.balls]
 
+    def prepare_sparkles(self):
+        self.sparkles_slider = Sparkles(
+            self.background_surface, self.thread, group = self.group
+        )
+        self.sparkles_post = Sparkles(
+            self.background_surface, self.thread,
+            'pic/sparkle_post.png', self.group
+        )
 
-    def HandleCol(self, collision):
-         if collision:
-              if collision is WITH_SLIDER:
-                   self.vel += self.delta_vel if self.vel < self.max_vel else 0
-                   self.sparkles_slider.generate_sparkles(randint(MIN_SPARKLES_AMOUNT, MAX_SPARKLES_AMOUNT), self.rect.center)
-              elif collision is WITH_POST:
-                   self.sparkles_post.generate_sparkles(randint(MIN_SPARKLES_AMOUNT, MAX_SPARKLES_AMOUNT), self.rect.center)
-              elif collision is WITH_GOAL_LEFT:
-                   pygame.event.post(pygame.event.Event(pygame.USEREVENT, {'collision':WITH_GOAL_LEFT}))
-                   self.put(ang=randint(-180, 180))
-              elif collision is WITH_GOAL_RIGHT:
-                   pygame.event.post(pygame.event.Event(pygame.USEREVENT, {'collision':WITH_GOAL_RIGHT}))
-                   self.put(ang=randint(-90, 90))
-         else:
-             self.move(self.dx, self.dy)
-
-    def Move(self, sliders, posts, goals, balls):
-    # движение мяча; sliders - возможные слайдеры (лист), posts - возможные штанги (лист)
-    # расчет смещений
-         self.dx = int(math.ceil(self.vel*math.cos(math.radians(self.ang))))
-         self.dy = int(math.ceil(self.vel*math.sin(math.radians(self.ang))))
-    # проверка и обработка столкновений
-         self.HandleCol(self.ChkCollision(sliders, posts, goals, balls))
-
-         self.ang_hist.popleft()
-         self.ang_hist.append(math.ceil(math.fabs(int(self.ang))))
-         if self.ang_hist.count(self.ang_hist[0]) == ANG_HIST_MAX:
-              self.ang += randint(-ANG_RND_DISP_MAX, ANG_RND_DISP_MAX)
-
-
-    def ShiftVectors(self, lim_dx, lim_dy):
-    # создаём вектора с малыми частями смещений (dx и dy)
-        if self.dx < lim_dx and self.dy < lim_dy:          # если смещения не слишком велики (до лимитов)
-            return zip([self.dx], [self.dy])               # просто вернуть их
-
-        if math.fabs(self.dx) >= math.fabs(self.dy):
-            DX = [sign(self.dx) * lim_dx for i in range(int(math.fabs(self.dx)) / lim_dx)]
-            if int(math.fabs(self.dx)) % lim_dx: DX.append(sign(self.dx) * (int(math.fabs(self.dx)) % lim_dx))
-
-            DY = [self.dy / len(DX) for i in range(len(DX))]
-            if int(math.fabs(self.dy)) % len(DX): DY[-1] += sign(self.dy) * (self.dy % len(DX))
+    def update(self):
+        self.calculate_move()
+        self.check_collision()
+        if self.collision:
+            self.collision.handle()
+            self.process_moves_history()
+            self.collision = None
         else:
-            DY = [sign(self.dy) * lim_dx/2 for i in range(int(math.fabs(self.dy)) / lim_dx/2)]
-            if int(math.fabs(self.dy)) % (lim_dx/2): DY.append(sign(self.dy) * (int(math.fabs(self.dy)) % (lim_dx/2)))
+            self.move(self.dx, self.dy)
 
-            DX = [self.dx / len(DY) for i in range(len(DY))]
-            if int(math.fabs(self.dx)) % len(DY): DX[-1] += sign(self.dx) * (self.dx % len(DY))
+    def process_moves_history(self):
+        if self.dx == 0:
+            self.zero_dx_count += 1
+            if self.zero_dx_count >= ZERO_MOVES_COUNT_MAX:
+                self.zero_dx_count = 0
+                self.zero_dy_count = 0
+                self.change_angle_slightly()
+        else:
+            if self.dy == 0:
+                self.zero_dy_count += 1
+                if self.zero_dy_count >= ZERO_MOVES_COUNT_MAX:
+                    self.zero_dx_count = 0
+                    self.zero_dy_count = 0
+                    self.change_angle_slightly()
+            else:
+                self.zero_dy_count = 0
 
-        DX[len(DX) / 2], DX[-1] = DX[-1], DX[len(DX) / 2]
-        DY[len(DY) / 2], DY[-1] = DY[-1], DY[len(DY) / 2]
+    def change_angle_slightly(self):
+        self.dang = 0.003
+        self.rotation = 0.08
 
-        return zip(DX, DY)
+    def calculate_move(self):
+        self.dx = math.trunc(self.speed * math.cos(self.angle))
+        self.dy = math.trunc(self.speed * math.sin(self.angle))
+        if self.rotation > 0:
+            self.angle += self.rotation
+            self.rotation -= 0.01
 
-    def ChkCollision(self, Sliders=None, Posts=None, Goals=None, Balls=None):
-        # проверяем на столкновения с объектами и границами; bool
+    def check_collision(self):
+        if CollisionWithHBorder.check(self):
+            self.collision = CollisionWithHBorder(self)
+            return
 
-        # границы сверху и снизу
-        if math.fabs(FIELD_H/2 - (self.rect.centery + self.dy)) > FIELD_H/2:
-            self.rect.centery = self.rad if self.rect.centery + self.dy < FIELD_H/2 else FIELD_H - self.rad
-            self.ang *= -1
-            return True
+        if CollisionWithGoal.is_between_posts(self):
+            if CollisionWithGoal.check(self):
+                self.collision = CollisionWithGoal(self)
+                return
+        elif CollisionWithVBorder.check(self):
+            self.collision = CollisionWithVBorder(self)
+            return
 
-        # боковые границы
-        if self.rect.left + self.dx < L_GOAL_LINE:
-            self.rect.left = L_GOAL_LINE
-            self.ang = math.degrees(math.pi) - self.ang
+        collision_round_object = CollisionWithRound.get_collision_object(self)
+        if collision_round_object:
+            self.collision = CollisionWithRound(self, collision_round_object)
+            return
 
-            is_goal = self.rect.top + self.dy > Goals[1].rect.top and self.rect.bottom + self.dy < Goals[1].rect.bottom
-            if is_goal:
-                return WITH_GOAL_LEFT
+        collision_slider = CollisionWithSlider.get_collision_slider(self)
+        if collision_slider:
+            self.collision = CollisionWithSlider(self, collision_slider)
+            return
 
-            return True
-
-        if self.rect.right + self.dx > R_GOAL_LINE:
-            self.rect.right = R_GOAL_LINE
-            self.ang = math.degrees(math.pi) - self.ang
-
-            is_goal = (self.rect.top + self.dy > Goals[0].rect.top and self.rect.bottom + self.dy < Goals[0].rect.bottom)
-            if is_goal:
-                return WITH_GOAL_RIGHT
-
-            return True
-
-        # столкновения со штангами
-        for post in Posts:
-            if math.sqrt((post.rect.centerx - self.rect.centerx) ** 2 + (post.rect.centery - self.rect.centery) ** 2) < self.rad + post.size/2:
-                self.GetRound(post.rect.centerx, post.rect.centery, post.size/2)
-                return WITH_POST
-
-        for ball in Balls:
-            if self.rect != ball.rect:
-                if math.sqrt((ball.rect.centerx - self.rect.centerx) ** 2 + (ball.rect.centery - self.rect.centery) ** 2) < self.rad + ball.rad:
-                    self.GetRound(ball.rect.centerx, ball.rect.centery, ball.rad)
-                    return WITH_BALL
-
-
-        # столкновения со слайдерами
-        for slider in Sliders:
-            slider_xl = slider.rect.left
-            slider_xr = slider.rect.right
-            slider_xc = slider.rect.centerx
-            slider_yt = slider.rect.top + slider.width/2
-            slider_yb = slider.rect.bottom - slider.width/2
-
-            if (self.rect.centerx < slider_xr and self.rect.centerx > slider_xl and self.rect.bottom>slider.rect.top and self.rect.top<slider.rect.bottom or self.ChkIntersect(slider)):
-
-                for (dx, dy) in self.ShiftVectors(slider.width/2, slider.height/2):
-                    self.rect.centerx += dx
-                    self.rect.centery += dy
-                    collision = pygame.sprite.collide_mask(self, slider)
-                    if collision:
-                        if ( self.rect.centery >= slider_yt  and
-                                     self.rect.centery <= slider_yb ):
-                            self.rect.centerx = slider_xc - sign(self.dx)*(slider.width/2 + self.rad)
-                            self.ang = math.degrees(math.pi) - self.ang
-                        elif self.rect.centery < slider_yt:
-                            self.GetRound(slider_xc, slider_yt, slider.width/2)
-                        elif self.rect.centery > slider_yb:
-                            self.GetRound(slider_xc, slider_yb, slider.width/2)
-                        return WITH_SLIDER
-
-                self.rect.centerx -= self.dx
-                self.rect.centery -= self.dy
-
-        return False
-
-
-    def ChkIntersect(self, slider):
-        def onSegment((ax, ay), (bx, by), (cx, cy)):
-            if (ax <= max(bx, cx) and ax >= min(bx, cx) and
-               ay <= max(by, cy) and ay >= min(by, cy)):
-                return True
-
-            return False
-
-        def CCW_orientation((ax, ay), (bx, by), (cx, cy)):
-            val = (ay - by) * (cx - ax) - (ax - bx) * (cy - ay);
-            if (val == 0):  return 0
-            return 1 if val > 0 else 2
-
-        x1 = self.rect.centerx
-        y1 = self.rect.centery
-        ball_p1 = (x1,y1)
-
-        x2 = self.rect.centerx + self.dx
-        y2 = self.rect.centery + self.dy
-        ball_p2 = (x2, y2)
-
-        x3 = slider.rect.centerx - sign(self.dx)*slider.rect.width/2
-        y3 = slider.rect.top
-        slider_p1 = (x3, y3)
-
-        x4 = slider.rect.centerx - sign(self.dx)*slider.rect.width/2
-        y4 = slider.rect.bottom
-        slider_p2 = (x4, y4)
-
-        o1 = CCW_orientation(ball_p1, ball_p2, slider_p1)
-        o2 = CCW_orientation(ball_p1, ball_p2, slider_p2)
-        o3 = CCW_orientation(slider_p1, slider_p2, ball_p1)
-        o4 = CCW_orientation(slider_p1, slider_p2, ball_p2)
-
-        if (o1 != o2 and o3 != o4):   return True
-        if (o1 == 0 and onSegment(ball_p1, slider_p1, ball_p2)):   return True
-        if (o2 == 0 and onSegment(ball_p1, slider_p2, ball_p2)):   return True
-        if (o3 == 0 and onSegment(slider_p1, ball_p1, slider_p2)): return True
-        if (o4 == 0 and onSegment(slider_p1, ball_p2, slider_p2)): return True
-
-        return False
-
-
-    def GetRound(self, centerx, centery, rad):
-         h_cathet  = math.fabs(centery - self.rect.centery)
-         c_hypoten = math.sqrt((centerx - self.rect.centerx)**2 + (centery - self.rect.centery)**2)
-         try:
-              ang_collide = math.asin(h_cathet/c_hypoten) if self.rect.centerx >= centerx else math.pi-math.asin(h_cathet/c_hypoten) # radians
-         except ValueError:
-              ang_collide = 1
-         ang_collide *= 1 if self.rect.centery >= centery else -1
-         self.rect.centerx = centerx + (rad + self.rad+5) * math.cos(ang_collide)
-         self.rect.centery = centery + (rad + self.rad+5) * math.sin(ang_collide)
-         self.ang = math.degrees((math.pi*2 + ang_collide) % (math.pi*2))
+    def generate_sparkles(self, sparkles_group):
+        sparkles_count = randint(MIN_SPARKLES_AMOUNT, MAX_SPARKLES_AMOUNT)
+        sparkles_group.generate_sparkles(sparkles_count, self.rect.center)

@@ -1,4 +1,5 @@
 
+
 class BattleModification:
     def __init__(self, name, battle, time=None):
         self.name = name
@@ -14,4 +15,3 @@ class BattleModification:
 class AddBalls(BattleModification):
     def modify(self):
         self.battle.add_ball_to_battle()
-    

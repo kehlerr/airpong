@@ -1,23 +1,23 @@
-#!/usr/bin/python
+import pygame
 
-from common import *
-from color_defs import *
-from field_defs import *
-import battle
+from common import WINDOW_TITLE, KEY_REPEAT_INT, KEY_REPEAT_DEL
+from field import DISPLAY_SIZE, BACKGROUND_COLOR
+from battle import Battle
 
 
-def initwindow((width, height), title):
-    # pygame.init()
-    CLOCK = pygame.time.Clock()
-    display = pygame.display.set_mode((width, height))
-    pygame.display.set_caption(title)
-    display.fill(BKG_CL)
+def create_window():
+    pygame.time.Clock()
+    display = pygame.display.set_mode(DISPLAY_SIZE)
+    display.fill(BACKGROUND_COLOR)
+    setup_window()
+    return display
+
+def setup_window():
+    pygame.display.set_caption(WINDOW_TITLE)
     pygame.key.set_repeat(KEY_REPEAT_DEL, KEY_REPEAT_INT)
     pygame.mouse.set_visible(False)
 
-    return display
-
-
-def initgame():
-    return battle.Battle(initwindow(DISPLAY_SIZE, WINDOW_TITLE))
-
+def create_battle():
+    window = create_window()
+    battle = Battle(window)
+    return battle

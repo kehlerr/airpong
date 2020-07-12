@@ -1,9 +1,9 @@
-#!/usr/bin/python
-
-import obj_template
+from immovable_object import ImmovableObject
 
 
-class Digit(obj_template.T):
-    def __init__(self, digit, color, size, pos, sfce):
-        spr_img = 'pic/digit_' + digit + '_' + color + '.png'
-        obj_template.T.__init__(self, spr_img, size, pos, sfce=sfce)
+class Digit(ImmovableObject):
+    def __init__(self, background_surface, pos, size, digit, color):
+        image_path = f'pic/digit_{digit}_{color}.png'
+        super(Digit, self).__init__(
+            background_surface, pos, image_path, size = size
+        )

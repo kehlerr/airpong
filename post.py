@@ -1,5 +1,8 @@
-import obj_template
+from immovable_object import ImmovableObject
+from round_object import RoundObject
 
 
-class Post(obj_template.T):
-    pass
+class Post(ImmovableObject, RoundObject):
+    image_path = 'pic/post.png'
+    size = (30, 30)
+    radius = 15

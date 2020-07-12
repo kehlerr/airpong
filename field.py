@@ -1,55 +1,128 @@
-#!/usr/bin/python
+import pygame
 
-from line import *
-from net import *
-from post import *
+import color_defs as colors
+from line import Line
+from net import Net
+from post import Post
+from scoreboard import ScoreBoard
+
+
+DISPLAY_W = 1000
+DISPLAY_H = 600
+DISPLAY_SIZE = (DISPLAY_W, DISPLAY_H)
+FIELD_W = 800
+FIELD_H = 600
+BACKGROUND_COLOR = colors.PURPLE
+BORDER_HEIGHT = 20
+NET_SIZE = 30
+GOAL_AREA = NET_SIZE
+L_GOAL_LINE = GOAL_AREA
+R_GOAL_LINE = FIELD_W - GOAL_AREA
+GOAL_LINE_SIZE_PERCENT = 0.6
+NET_DENSE = 25
+POST_SIZE = 30
+POST_OFFSET_Y = int((FIELD_H-FIELD_H*GOAL_LINE_SIZE_PERCENT)/2) + POST_SIZE/2
+POST_BOT_Y = FIELD_H - POST_OFFSET_Y
+POST_LEFT_X = L_GOAL_LINE
+POST_TOP_Y = POST_OFFSET_Y
+POST_RIGHT_X = R_GOAL_LINE
+GOAL_LINE_WIDTH = 22
+GOAL_LINE_HEIGHT = POST_BOT_Y - POST_TOP_Y
+BKG_IMG = 'pic/bkg11.jpg'
+BORDER_TOP_IMG = 'pic/border_top.png'
+BORDER_BOT_IMG = 'pic/border_bot.png'
+BORDER_SIDE_IMG = 'pic/border_side.png'
+CENTER_LINE_IMG = 'pic/center_line.png'
+GOAL_LINE_IMG = 'pic/goal_line.png'
+SCOREBOARD_POS = (900, 300)
 
 
 class Field:
-    def __init__(self, sfce, width=FIELD_W, height=FIELD_H):
-        self.sfce = sfce
-        self.rect = pygame.Rect(0, 0, width, height)
-        self.bkgImg = pygame.image.load(BKG_IMG)
-        self.bkgImg = pygame.transform.scale(self.bkgImg, (width, height))
-        self.height = height
+    def __init__(self, surface, width = FIELD_W, height = FIELD_H):
+        self.background_surface = surface
+        self.size = (width, height)
         self.width = width
+        self.height = height
+        self.rect = pygame.Rect((0, 0), self.size)
+        self.surface = None
+        self.scoreboard = None
         self.posts = pygame.sprite.Group([])
         self.goals = pygame.sprite.Group([])
-        self.field_sfce = self.bkgImg
+
+    def present(self):
+        self.create_surface()
+
+        self.create_scoreboard()
+
+        self.create_nets()
+        self.create_borders()
+        self.create_goal_lines()
+        self.create_center_line()
+        self.create_posts()
+
         self.draw()
-        self.sfce.blit(self.field_sfce, (0, 0))
+
+    def create_surface(self):
+        background_sprite = pygame.image.load(BKG_IMG)
+        self.surface = pygame.transform.scale(background_sprite, self.size)
 
     def draw(self):
-        Line(BORDER_TOP_IMG, (0, 0), (self.width, BORDER_HEIGHT), sfce=self.field_sfce)
-        Line(BORDER_BOT_IMG, (0, self.height - BORDER_HEIGHT), (self.width, BORDER_HEIGHT), sfce=self.field_sfce)
-        Line(CENTER_LINE_IMG, (self.rect.centerx, self.rect.centery), (0, 0),  sfce=self.field_sfce)
-#       pygame.draw.line(self.FieldSfce, SNOW, (self.FieldRect.topright), (self.FieldRect.bottomright), 1)
-#       pygame.draw.line(self.FieldSfce, SNOW, (self.FieldRect.midtop), (self.FieldRect.midbottom), 3)
-#       pygame.draw.circle(self.FieldSfce, SNOW, (self.FieldRect.centerx+1, self.FieldRect.centery+1), FIELD_CENTER_SIZE, 3)
-        Net('pic/net5.png', (NET_SIZE, FIELD_H), (NET_SIZE/2, FIELD_H/2), self.field_sfce, (0, 0, NET_SIZE, FIELD_H))
-        Net('pic/net5.png', (NET_SIZE, FIELD_H), (FIELD_W - (NET_SIZE+1)/2, FIELD_H/2), self.field_sfce, (0, 0, NET_SIZE, FIELD_H))
-        Line(BORDER_SIDE_IMG, (self.width-1, self.rect.centery), (0, 0), sfce=self.sfce)
-        line_goalleft=Line(GOAL_LINE_IMG, (POST_LEFT_X, (POST_TOP_Y+POST_BOT_Y)/2), (0, 0), self.goals, self.field_sfce)
-        line_goalleft.rect = pygame.Rect(POST_LEFT_X-1, POST_TOP_Y + POST_SIZE/2, 3, (POST_BOT_Y - POST_TOP_Y - POST_SIZE))
+        self.background_surface.blit(self.surface, (0, 0))
 
-        line_topleft=Line(BORDER_SIDE_IMG, (POST_LEFT_X, 0), (0, 0))
-        line_topleft.rect.midbottom = (POST_LEFT_X, POST_TOP_Y)
-        self.field_sfce.blit(line_topleft.image, line_topleft.rect)
-        line_botleft=Line(BORDER_SIDE_IMG, (POST_LEFT_X, 0), (0, 0))
-        line_botleft.rect.midtop = (POST_LEFT_X, POST_BOT_Y)
-        self.field_sfce.blit(line_botleft.image, line_botleft.rect)
+    def create_borders(self):
+        Line(
+            self.surface, (POST_LEFT_X, (POST_TOP_Y+POST_BOT_Y)/2),
+            GOAL_LINE_IMG
+        )
+        Line(
+            self.surface, (POST_RIGHT_X, (POST_TOP_Y+POST_BOT_Y)/2),
+            GOAL_LINE_IMG
+        )
 
-        line_goalright=Line(GOAL_LINE_IMG, (POST_RIGHT_X, (POST_TOP_Y+POST_BOT_Y)/2), (0, 0), self.goals, self.field_sfce)
-        line_goalright.rect = pygame.Rect(POST_RIGHT_X-1, POST_TOP_Y+POST_SIZE/2, 3, (POST_BOT_Y - POST_TOP_Y - POST_SIZE))
+        Line(
+            self.surface, (0, 0),
+            BORDER_TOP_IMG, size = (self.width, BORDER_HEIGHT)
+        )
+        Line(
+            self.surface, (0, FIELD_H - BORDER_HEIGHT),
+            BORDER_BOT_IMG, size = (self.width, BORDER_HEIGHT)
+        )
 
-        line_topright=Line(BORDER_SIDE_IMG, (POST_RIGHT_X, 0), (0, 0))
-        line_topright.rect.midbottom = (POST_RIGHT_X, POST_TOP_Y)
-        self.field_sfce.blit(line_topright.image, line_topright.rect)
-        line_botright=Line(BORDER_SIDE_IMG, (POST_RIGHT_X, 0), (0, 0))
-        line_botright.rect.midtop = (POST_RIGHT_X, POST_BOT_Y)
-        self.field_sfce.blit(line_botright.image, line_botright.rect)
+    def create_center_line(self):
+        Line(
+            self.surface, (self.rect.centerx, self.rect.centery),
+            CENTER_LINE_IMG
+        )
 
-        Post(POST_IMG, (POST_SIZE, ), (POST_RIGHT_X, POST_TOP_Y), self.posts, self.field_sfce)
-        Post(POST_IMG, (POST_SIZE, ), (POST_LEFT_X, POST_TOP_Y), self.posts, self.field_sfce)
-        Post(POST_IMG, (POST_SIZE, ), (POST_LEFT_X, POST_BOT_Y), self.posts, self.field_sfce)
-        Post(POST_IMG, (POST_SIZE, ), (POST_RIGHT_X, POST_BOT_Y), self.posts, self.field_sfce)
+    def create_goal_lines(self):
+        Line(
+            self.surface, (POST_LEFT_X - GOAL_LINE_WIDTH/2, POST_TOP_Y),
+            BORDER_SIDE_IMG, self.goals,
+            (GOAL_LINE_WIDTH, GOAL_LINE_HEIGHT)
+        )
+        Line(
+            self.surface, (POST_RIGHT_X - POST_SIZE/4, POST_TOP_Y),
+            BORDER_SIDE_IMG, self.goals,
+            (GOAL_LINE_WIDTH, GOAL_LINE_HEIGHT)
+        )
+
+    def create_nets(self):
+        Net(
+            self.surface, (NET_SIZE/2, FIELD_H/2),
+            size = (NET_SIZE, FIELD_H),
+            crop_rect = (0, 0, NET_SIZE, FIELD_H)
+        )
+        Net(
+            self.surface, (FIELD_W - (NET_SIZE)/2, FIELD_H/2),
+            size = (NET_SIZE, FIELD_H),
+            crop_rect = (0, 0, NET_SIZE, FIELD_H)
+        )
+
+    def create_posts(self):
+        Post(self.surface, (POST_RIGHT_X, POST_TOP_Y), group = self.posts)
+        Post(self.surface, (POST_RIGHT_X, POST_BOT_Y), group = self.posts)
+        Post(self.surface, (POST_LEFT_X, POST_TOP_Y), group = self.posts)
+        Post(self.surface, (POST_LEFT_X, POST_BOT_Y), group = self.posts)
+
+    def create_scoreboard(self):
+        self.scoreboard = ScoreBoard(self.background_surface, SCOREBOARD_POS)

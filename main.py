@@ -1,34 +1,39 @@
-#!/usr/bin/python 
+#!/usr/bin/python3.7
 
 from functools import wraps
 from sys import exit
 
-from pygame.locals import *
+import pygame
+from pygame.locals import QUIT
 
 import initgame
-from common import *
+from common import CLOCK, FPS
 
 
-def main_wrapp(loop):
-    global battle
-    battle = initgame.initgame()
-
+def main_wrapper(loop):
     @wraps(loop)
     def decorated():
-        while True:
-            battle.update(loop, CLOCK.tick(FPS))
+        battle = initgame.create_battle()
+        context = { 'battle': battle }
+        loop(context = context)
     return decorated
 
+@main_wrapper
+def main_loop(context = {}):
+    try:
+        battle = context.get('battle')
+        while True:
+            battle.update(handle_events, CLOCK.tick(FPS))
+    except KeyboardInterrupt:
+        pygame.quit()
 
-@main_wrapp
-def main():
+def handle_events(handler):
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
             exit()
-        else:
-            battle.handle_event(event)
 
+        handler.handle_event(event)
 
 if __name__ == '__main__':
-    main()
+    main_loop()
