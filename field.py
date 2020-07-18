@@ -95,12 +95,12 @@ class Field:
         )
 
     def create_goal_lines(self):
-        Line(
+        self.left_goal_line = Line(
             self.surface, (POST_LEFT_X - GOAL_LINE_WIDTH/2, POST_TOP_Y),
             BORDER_SIDE_IMG, self.goals,
             (GOAL_LINE_WIDTH, GOAL_LINE_HEIGHT)
         )
-        Line(
+        self.right_goal_line = Line(
             self.surface, (POST_RIGHT_X - POST_SIZE/4, POST_TOP_Y),
             BORDER_SIDE_IMG, self.goals,
             (GOAL_LINE_WIDTH, GOAL_LINE_HEIGHT)

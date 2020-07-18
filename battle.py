@@ -1,3 +1,4 @@
+from collections import namedtuple
 import pygame
 from pygame import USEREVENT
 from pygame.locals import K_ESCAPE, KEYDOWN, KEYUP, K_UP, K_DOWN, \
@@ -6,6 +7,7 @@ from pygame.locals import K_ESCAPE, KEYDOWN, KEYUP, K_UP, K_DOWN, \
 from ball import Ball
 from field import Field, L_GOAL_LINE, R_GOAL_LINE
 from slider import Slider, SLIDER_DISTX
+from bots import EasyBot, NormalBot, HardBot
 from thread_mgr import Thread
 from common import UP, DOWN
 
@@ -27,9 +29,12 @@ class Battle:
         self.update_score()
         self.sprites = pygame.sprite.RenderPlain()
         self.sliders = []
+        self.goals = {}
+        self.fill_goals()
         self.create_sliders()
         self.balls = []
         self.add_ball_to_battle()
+        self.bot_player = NormalBot(self, self.right_slider, self.right_goal)
         self.state = 'need_wait_put_ball'
         self.modified = False
         pygame.time.set_timer(EV_MODIFY_BATTLE, 7000)
@@ -73,20 +78,20 @@ class Battle:
             quit_event = pygame.event.Event(QUIT)
             pygame.event.post(quit_event)
         if is_pressed[K_w]:
-            self.left_slider.move(UP)
+            self.left_slider.process(UP)
         if is_pressed[K_s]:
-            self.left_slider.move(DOWN)
+            self.left_slider.process(DOWN)
         if is_pressed[K_UP]:
-            self.right_slider.move(UP)
+            self.right_slider.process(UP)
         if is_pressed[K_DOWN]:
-            self.right_slider.move(DOWN)
+            self.right_slider.process(DOWN)
 
     def on_key_up(self):
         is_pressed = pygame.key.get_pressed()
         if not (is_pressed[K_w] and is_pressed[K_s]):
-            self.left_slider.on_change_move()
+            self.left_slider.on_change_direction()
         if not (is_pressed[K_UP] and is_pressed[K_DOWN]):
-            self.right_slider.on_change_move()
+            self.right_slider.on_change_direction()
 
     def handle_user_event(self, event):
         event_info = event.__dict__
@@ -136,6 +141,25 @@ class Battle:
                     self.sprites, collision_objects, self.thread)
         self.balls.append(ball)
 
+    def fill_goals(self):
+        Goal = namedtuple('Goal', ['pos_x', 'top', 'bottom'])
+        left_goal = self.field.left_goal_line
+        self.left_goal = Goal(
+            left_goal.rect.centerx,
+            left_goal.rect.top,
+            left_goal.rect.bottom
+        )
+
+        right_goal = self.field.right_goal_line
+        self.right_goal = Goal(
+            right_goal.rect.centerx,
+            right_goal.rect.top,
+            right_goal.rect.bottom
+        )
+
+    def get_ball(self):
+        return self.balls[0]
+
     def create_sliders(self):
         left_pos = (L_GOAL_LINE + SLIDER_DISTX, self.field.rect.centery)
         self.left_slider = Slider(
@@ -153,11 +177,11 @@ class Battle:
 
     def on_play_state(self):
         self.process_objects()
+        self.bot_player.process()
 
     def process_objects(self):
         for ball in self.balls:
             ball.update()
-        return True
 
     def on_need_wait_put_ball(self):
         self.update_state('waiting_put_ball')

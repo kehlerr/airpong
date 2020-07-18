@@ -11,8 +11,8 @@ from ball_collision import CollisionWithVBorder, CollisionWithHBorder,\
 from sparkles import Sparkles
 
 BALL_RAD = 20
-BALL_SPEED = 10
-MAX_BALL_SPEED = 35
+BALL_SPEED = 12
+MAX_BALL_SPEED = 30
 ZERO_MOVES_COUNT_MAX=5
 
 MIN_SPARKLES_AMOUNT = 60
@@ -132,3 +132,7 @@ class Ball(RoundObject):
     def generate_sparkles(self, sparkles_group):
         sparkles_count = randint(MIN_SPARKLES_AMOUNT, MAX_SPARKLES_AMOUNT)
         sparkles_group.generate_sparkles(sparkles_count, self.rect.center)
+
+    def increase_speed(self):
+        if self.speed < MAX_BALL_SPEED:
+            self.speed += 0.75

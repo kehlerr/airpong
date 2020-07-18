@@ -1,7 +1,9 @@
 import pygame
+import random
 
 from base_object import BaseObject
-from field  import GOAL_AREA, FIELD_H
+from field import GOAL_AREA, FIELD_H
+from common import UP, DOWN
 
 
 SLIDER_DISTX = GOAL_AREA * 3
@@ -18,27 +20,37 @@ class Slider(BaseObject):
         self.image_path = f'pic/slider_{color}.png'
         super(Slider, self).__init__(*args, group = group)
         self.speed = 1
-        self.direction = 1
+        self.direction = random.choice([UP, DOWN])
 
-    def move(self, direction):
+    def process(self, direction):
         if direction != self.direction:
-            self.direction = direction
-            self.on_change_move()
+            self.change_direction(direction)
+        if self.can_move():
+            self.move()
+            return True
         else:
-            self.speed += self.acceleration
-            self.speed = min(self.speed, self.max_speed)
-        self.rect.centery -= self.direction * self.speed
-        self.check_borders()
+            limit_y = self.direction*(FIELD_H/2 - self.height/2-1)
+            self.rect.centery = FIELD_H/2 - limit_y
+            return False
 
-    def on_change_move(self):
+    def can_move(self):
+        if self.direction == UP:
+            return self.rect.top > 1
+        elif self.direction == DOWN:
+            return self.rect.bottom < FIELD_H-1
+
+    def move(self):
+        self.speed += self.acceleration
+        self.speed = min(self.speed, self.max_speed)
+        self.rect.centery -= self.direction * self.speed
+
+    def change_direction(self, direction):
+        self.direction = direction
+        self.on_change_direction()
+
+    def on_change_direction(self):
         if self.speed > 1:
             self.speed = 1
-
-    def check_borders(self):
-        if self.rect.top < 0:
-            self.rect.top = 0
-        if self.rect.bottom > FIELD_H:
-            self.rect.bottom = FIELD_H
 
     def get_primitive_view(self):
         surface = pygame.Surface(self.size, pygame.SRCALPHA, 32)

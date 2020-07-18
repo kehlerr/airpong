@@ -170,6 +170,7 @@ class CollisionWithSlider(CollisionWithVBorder, CollisionWithRound):
             CollisionWithRound.handle(self)
         self.ball.dang = 0.00
         self.ball.generate_sparkles(self.ball.sparkles_slider)
+        self.ball.increase_speed()
 
     def change_pos_between_rounds(self):
         ball_offset_x = - sign(self.ball.dx)*(self.obj_r + self.ball.radius)
