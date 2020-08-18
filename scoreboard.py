@@ -17,8 +17,15 @@ class ScoreBoard(ImmovableObject):
         super(ScoreBoard, self).__init__(
             background_surface, pos
         )
-        self.surface_bg = self.image.copy()
         self.score = None
+        self.numbers_dest = (self.rect.x+DIGIT_OFFSET[X], self.rect.y+DIGIT_OFFSET[Y])
+        numbers_panel_size = self.rect.width - DIGIT_OFFSET[X], DIGIT_SIZE[Y]*2
+        self.numbers_rect = pygame.Rect(
+            (DIGIT_OFFSET[X], DIGIT_OFFSET[Y]),
+            numbers_panel_size
+        )
+        self.surface_copy = pygame.Surface(numbers_panel_size, pygame.SRCALPHA, 32)
+        self.surface_copy.blit(self.surface, ((0,0), numbers_panel_size))
         self.l_number = {}
         self.r_number = {}
 
@@ -35,11 +42,12 @@ class ScoreBoard(ImmovableObject):
         if self.r_number:
             self.del_number(self.r_number)
             self.r_number.clear()
+        self.surface.blit(self.surface_copy, (0, 0))
 
     def del_number(self, number):
         for d in number:
             digit = number[d]
-            self.surface_bg.blit(self.surface, digit.rect, digit.rect)
+            digit.clear(self.surface)
 
     def create_numbers(self):
         l_num = str(self.score[0])
@@ -55,7 +63,7 @@ class ScoreBoard(ImmovableObject):
         for digit in l_num:
             size = (DIGIT_SIZE[X]/scale, int(DIGIT_SIZE[Y]/scale))
             self.l_number[digit] = Digit(
-                self.surface_bg, (x, y), size, digit, 'red'
+                self.surface, (x, y), size, digit, 'red'
             )
             x += DIGIT_OFFSET[X]/l_digits_count
 
@@ -64,15 +72,12 @@ class ScoreBoard(ImmovableObject):
         for digit in r_num:
             size = (DIGIT_SIZE[X] / scale, DIGIT_SIZE[Y] / scale)
             self.r_number[digit] = Digit(
-                self.surface_bg, (x, y), size, digit, 'blue'
+                self.surface, (x, y), size, digit, 'blue'
             )
             x += DIGIT_OFFSET[X]/r_digits_count
 
     def redraw(self):
-        dest = (self.rect.x+DIGIT_OFFSET[X], self.rect.y+DIGIT_OFFSET[Y])
-        numbers_rect = pygame.Rect(
-            DIGIT_OFFSET[X], DIGIT_OFFSET[Y],
-            self.rect.width - 2*DIGIT_OFFSET[X], DIGIT_SIZE[Y]
+        self.background_surface.blit(
+            self.surface,
+            self.numbers_dest, self.numbers_rect
         )
-        self.background_surface.blit(self.surface_bg, dest, numbers_rect)
-        pygame.display.update(self.rect)

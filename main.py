@@ -1,4 +1,4 @@
-#!/usr/bin/python3.7
+#!/usr/bin/python3.8
 
 from functools import wraps
 from sys import exit
@@ -36,4 +36,5 @@ def handle_events(handler):
         handler.handle_event(event)
 
 if __name__ == '__main__':
+    pygame.init()
     main_loop()

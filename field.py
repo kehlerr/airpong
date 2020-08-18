@@ -4,7 +4,6 @@ import color_defs as colors
 from line import Line
 from net import Net
 from post import Post
-from scoreboard import ScoreBoard
 
 
 DISPLAY_W = 1000
@@ -34,7 +33,6 @@ BORDER_BOT_IMG = 'pic/border_bot.png'
 BORDER_SIDE_IMG = 'pic/border_side.png'
 CENTER_LINE_IMG = 'pic/center_line.png'
 GOAL_LINE_IMG = 'pic/goal_line.png'
-SCOREBOARD_POS = (900, 300)
 
 
 class Field:
@@ -45,14 +43,11 @@ class Field:
         self.height = height
         self.rect = pygame.Rect((0, 0), self.size)
         self.surface = None
-        self.scoreboard = None
         self.posts = pygame.sprite.Group([])
         self.goals = pygame.sprite.Group([])
 
     def present(self):
         self.create_surface()
-
-        self.create_scoreboard()
 
         self.create_nets()
         self.create_borders()
@@ -123,6 +118,3 @@ class Field:
         Post(self.surface, (POST_RIGHT_X, POST_BOT_Y), group = self.posts)
         Post(self.surface, (POST_LEFT_X, POST_TOP_Y), group = self.posts)
         Post(self.surface, (POST_LEFT_X, POST_BOT_Y), group = self.posts)
-
-    def create_scoreboard(self):
-        self.scoreboard = ScoreBoard(self.background_surface, SCOREBOARD_POS)

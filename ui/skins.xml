@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<skins>
+    <skin name="menu_panel_btn" img_src="pic/menu_panel.png">
+        <piece>
+            <area_crop top="0" left="0"/>
+            <size width="54" height="42"/>
+            <align x="left" y="top"/>
+        </piece>
+        <piece>
+            <area_crop top="44" left="0"/>
+            <size width="54" height="42"/>
+            <align x="left" y="bottom"/>
+        </piece>
+        <piece>
+            <area_crop top="42" left="0"/>
+            <size width="54" height="2"/>
+            <align x="left" y="stretch"/>
+        </piece>
+
+        <piece>
+            <area_crop top="0" left="54"/>
+            <size width="2" height="42"/>
+            <align x="stretch" y="top"/>
+        </piece>
+        <piece>
+            <area_crop top="44" left="54"/>
+            <size width="2" height="42"/>
+            <align x="stretch" y="bottom"/>
+        </piece>
+        <piece>
+            <area_crop top="42" left="54"/>
+            <size width="2" height="2"/>
+            <align x="stretch" y="stretch"/>
+        </piece>
+
+        <piece>
+            <area_crop top="0" left="56"/>
+            <size width="54" height="42"/>
+            <align x="right" y="top"/>
+        </piece>
+        <piece>
+            <area_crop top="44" left="56"/>
+            <size width="54" height="42"/>
+            <align x="right" y="bottom"/>
+        </piece>
+        <piece>
+            <area_crop top="42" left="56"/>
+            <size width="54" height="2"/>
+            <align x="right" y="stretch"/>
+        </piece>
+    </skin>
+
+    <skin name="menu_panel_btn_highlighted" img_src="pic/menu_panel_highlighted.png">
+        <piece>
+            <area_crop top="0" left="0"/>
+            <size width="54" height="42"/>
+            <align x="left" y="top"/>
+        </piece>
+        <piece>
+            <area_crop top="44" left="0"/>
+            <size width="54" height="42"/>
+            <align x="left" y="bottom"/>
+        </piece>
+        <piece>
+            <area_crop top="42" left="0"/>
+            <size width="54" height="2"/>
+            <align x="left" y="stretch"/>
+        </piece>
+
+        <piece>
+            <area_crop top="0" left="54"/>
+            <size width="2" height="42"/>
+            <align x="stretch" y="top"/>
+        </piece>
+        <piece>
+            <area_crop top="44" left="54"/>
+            <size width="2" height="42"/>
+            <align x="stretch" y="bottom"/>
+        </piece>
+        <piece>
+            <area_crop top="42" left="54"/>
+            <size width="2" height="2"/>
+            <align x="stretch" y="stretch"/>
+        </piece>
+
+        <piece>
+            <area_crop top="0" left="56"/>
+            <size width="54" height="42"/>
+            <align x="right" y="top"/>
+        </piece>
+        <piece>
+            <area_crop top="44" left="56"/>
+            <size width="54" height="42"/>
+            <align x="right" y="bottom"/>
+        </piece>
+        <piece>
+            <area_crop top="42" left="56"/>
+            <size width="54" height="2"/>
+            <align x="right" y="stretch"/>
+        </piece>
+    </skin>
+</skins>
