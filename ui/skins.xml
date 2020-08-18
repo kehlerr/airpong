@@ -100,4 +100,20 @@
             <align x="right" y="stretch"/>
         </piece>
     </skin>
+
+    <skin name="win_icon" img_src="pic/icon_win.png">
+        <piece>
+            <area_crop top="0" left="0"/>
+            <size width="512" height="512"/>
+            <align x="stretch" y="stretch"/>
+        </piece>
+    </skin>
+
+    <skin name="lose_icon" img_src="pic/icon_lose.png">
+        <piece>
+            <area_crop top="0" left="0"/>
+            <size width="256" height="256"/>
+            <align x="stretch" y="stretch"/>
+        </piece>
+    </skin>
 </skins>

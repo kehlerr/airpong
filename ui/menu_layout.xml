@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <widgets>
-    <widget name="continue_btn" left="50" top="80" width="300" height="120">
+    <widget type="button" name="continue_btn" left="50" top="110" width="300" height="120">
         <caption value="CONTINUE" left="66" top="40"/>
     </widget>
 
-    <widget name="quit_btn" left="50" top="210" width="300" height="120" >
+    <widget type="button" name="quit_btn" left="50" top="230" width="300" height="120" >
         <caption value="QUIT" left="110" top="40"/>
     </widget>
 </widgets>

@@ -64,15 +64,16 @@ class Skin:
 
 
 class Widget:
-    on_hover_skin = 'menu_panel_btn_highlighted'
-    default_skin = 'menu_panel_btn'
+    on_hover_skin = None
+    default_skin = None
 
     def __init__(self, parent, name, w_size, pos,
-                 caption_data=None, skin_name=None):
+                 caption_data=None, skin_name=None, visible=True):
         self.parent = parent
         self.background_surface = self.parent.surface
         self.size = w_size
         self.position = pos
+        self.visible = visible != 'False'
         self.surface = pygame.Surface(w_size, pygame.SRCALPHA, 32)
         self.rect = self.surface.get_rect()
         parent_pos = self.parent.get_absolute_position()
@@ -97,7 +98,10 @@ class Widget:
         )
 
     def set_skin(self):
-        skin = self.parent.skins[self.skin_name or self.default_skin]
+        skin_name = self.skin_name or self.default_skin
+        if not skin_name:
+            return
+        skin = self.parent.skins[skin_name]
         skin.set_on_widget(self)
 
     def reskin(self, skin_name):
@@ -106,8 +110,39 @@ class Widget:
         self.draw()
 
     def is_mouse_on_wiget(self, cursor_pos: (int, int)) -> bool:
+        if not self.visible:
+            return
         absolute_rect = pygame.Rect(self.absolute_pos, self.size)
         return absolute_rect.collidepoint(cursor_pos)
+
+    def set_on_hover(self):
+        pass
+
+    def reset_hover(self):
+        pass
+
+    def set_onpressed(self, func):
+        self.on_pressed = func
+
+    def on_mouse_pressed(self):
+        pass
+
+    def draw(self):
+        if not self.visible:
+            return
+        if self.caption:
+            self.draw_caption()
+        self.parent.draw(self.surface, self.absolute_pos, self.rect)
+
+    def draw_caption(self):
+        font_obj = self.parent.fonts['btn_caption']
+        caption_sf = font_obj.render(self.caption, True, GOLDEN)
+        self.surface.blit(caption_sf, self.caption_position)
+
+
+class Button(Widget):
+    on_hover_skin = 'menu_panel_btn_highlighted'
+    default_skin = 'menu_panel_btn'
 
     def set_on_hover(self):
         self.is_hovered = True
@@ -117,20 +152,7 @@ class Widget:
         self.is_hovered = False
         self.reskin(self.default_skin)
 
-    def set_onpressed(self, func):
-        self.on_pressed = func
-
     def on_mouse_pressed(self):
         if self.on_pressed:
             self.on_pressed()
         self.reskin(self.on_hover_skin)
-
-    def draw(self):
-        if self.caption:
-            self.draw_caption()
-        self.parent.draw(self.surface, self.absolute_pos, self.rect)
-
-    def draw_caption(self):
-        font_obj = self.parent.fonts['btn_caption']
-        caption_sf = font_obj.render(self.caption, True, GOLDEN)
-        self.surface.blit(caption_sf, self.caption_position)

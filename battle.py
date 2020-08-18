@@ -4,7 +4,7 @@ from pygame import USEREVENT
 from pygame.locals import K_ESCAPE, KEYDOWN, KEYUP, K_UP, K_DOWN, \
          K_w, K_s, QUIT
 
-from menu_ui import MenuUI
+from menu_ui import MenuPause, MenuEnd
 from ball import Ball
 from field import Field, L_GOAL_LINE, R_GOAL_LINE, DISPLAY_SIZE
 from slider import Slider, SLIDER_DISTX
@@ -24,13 +24,20 @@ SCOREBOARD_POS = (900, 300)
 
 
 class Battle:
+    goals_target = 10
+
     def __init__(self, display):
         self.display = display
         self.thread = Thread()
         self.surface = pygame.Surface(DISPLAY_SIZE, pygame.SRCALPHA, 32)
         self.field = Field(self.surface)
         self.scoreboard = ScoreBoard(self.surface, SCOREBOARD_POS)
-        self.menu = MenuUI(self.display, self.field)
+        self.pause_menu = MenuPause(self.display, self)
+        self.menu_pos = (
+            (self.field.rect.width-self.pause_menu.width)/2,
+            (self.field.rect.height-self.pause_menu.height)/2
+        )
+        self.menu_end = None
         self.score = (0, 0)
         self.sprites = pygame.sprite.RenderPlain()
         self.sliders = []
@@ -53,6 +60,15 @@ class Battle:
         self.display.blit(self.surface, ((0,0), DISPLAY_SIZE))
         pygame.display.update(((0,0), DISPLAY_SIZE))
 
+    def reset(self):
+        self.score = (0, 0)
+        self.update_score()
+        self.menu_end.hide()
+        self.menu_end = None
+        for slider in self.sliders:
+            slider.put()
+        self.update_state('need_wait_put_ball')
+
     def update(self, main_events_loop, ticks):
         for sprite in self.sprites:
             sprite.clear(self.surface)
@@ -66,6 +82,8 @@ class Battle:
             self.on_need_wait_put_ball()
         if self.check_state('pause'):
             self.on_pause_state()
+            return
+        elif self.check_state('end'):
             return
 
         for sprite in self.sprites:
@@ -96,9 +114,6 @@ class Battle:
                 self.pressing_escape = True
                 self.pause_game()
                 return
-        elif not self.pressing_escape:
-            self.continue_game()
-            return
 
         if is_pressed[K_w]:
             self.left_slider.process(UP)
@@ -202,7 +217,8 @@ class Battle:
         self.bot_player.process()
 
     def on_pause_state(self):
-        self.menu.process()
+        active_menu = self.menu_end or self.pause_menu
+        active_menu.update()
 
     def process_objects(self):
         for ball in self.balls:
@@ -213,8 +229,11 @@ class Battle:
             self.update_score((1, 0))
         else:
             self.update_score((0, 1))
-        self.update_state('need_wait_put_ball')
         self.clear_modifications()
+        if max(self.score) == self.goals_target:
+            self.end_game()
+        else:
+            self.update_state('need_wait_put_ball')
 
     def on_need_wait_put_ball(self):
         self.update_state('waiting_put_ball')
@@ -222,16 +241,37 @@ class Battle:
 
     def pause_game(self):
         self.update_state('pause')
-        self.menu.show()
-        continue_btn = self.menu.get_widget('continue_btn')
+        self.pause_menu.set_position(self.menu_pos)
+        self.pause_menu.show()
+        continue_btn = self.pause_menu.get_widget('continue_btn')
         continue_btn.set_onpressed(self.continue_game)
-        quit_btn = self.menu.get_widget('quit_btn')
+        quit_btn = self.pause_menu.get_widget('quit_btn')
         quit_btn.set_onpressed(self.quit_game)
 
     def continue_game(self):
         self.update_state('play')
-        self.display.blit(self.surface, (0, 0))
-        pygame.display.update(((0,0), DISPLAY_SIZE))
+        self.pause_menu.hide()
+
+    def end_game(self):
+        self.update_state('pause')
+        menu = MenuEnd(self.display, self)
+        menu.set_position(self.menu_pos)
+        menu.load_layout()
+        win_icon = menu.get_widget('win_icon')
+        lose_icon = menu.get_widget('lose_icon')
+        if self.score[0] > self.score[1]:
+            win_icon.visible = True
+            lose_icon.visible = False
+        else:
+            win_icon.visible = False
+            lose_icon.visible = True
+        menu.show()
+        self.menu_end = menu
+        continue_btn = menu.get_widget('continue_btn')
+        continue_btn.set_onpressed(self.reset)
+        quit_btn = menu.get_widget('quit_btn')
+        quit_btn.set_onpressed(self.quit_game)
+
 
     def quit_game(self):
         pygame.event.clear()

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<widgets>
+    <widget skin="win_icon" name="win_icon" left="50" top="0" width="300" height="300" visible="False">
+        <caption value="YOU WIN" left="75" top="125"/>
+    </widget>
+
+    <widget skin="lose_icon" name="lose_icon" left="50" top="0" width="300" height="300" visible="False">
+        <caption value="YOU LOSE" left="70" top="130"/>
+    </widget>
+
+    <widget type="button" name="continue_btn" left="50" top="300" width="300" height="120">
+        <caption value="AGAIN" left="100" top="40"/>
+    </widget>
+
+    <widget type="button" name="quit_btn" left="50" top="420" width="300" height="120" >
+        <caption value="QUIT" left="110" top="40"/>
+    </widget>
+</widgets>
