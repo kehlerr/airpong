@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <skins>
-    <skin name="menu_panel_btn" img_src="pic/menu_panel.png">
+    <skin name="menu_panel_btn" img_src="menu_panel">
         <piece>
             <area_crop top="0" left="0"/>
             <size width="54" height="42"/>
@@ -51,7 +51,7 @@
         </piece>
     </skin>
 
-    <skin name="menu_panel_btn_highlighted" img_src="pic/menu_panel_highlighted.png">
+    <skin name="menu_panel_btn_highlighted" img_src="menu_panel_highlighted">
         <piece>
             <area_crop top="0" left="0"/>
             <size width="54" height="42"/>
@@ -101,7 +101,7 @@
         </piece>
     </skin>
 
-    <skin name="win_icon" img_src="pic/icon_win.png">
+    <skin name="win_icon" img_src="icon_win">
         <piece>
             <area_crop top="0" left="0"/>
             <size width="512" height="512"/>
@@ -109,7 +109,7 @@
         </piece>
     </skin>
 
-    <skin name="lose_icon" img_src="pic/icon_lose.png">
+    <skin name="lose_icon" img_src="icon_lose">
         <piece>
             <area_crop top="0" left="0"/>
             <size width="256" height="256"/>

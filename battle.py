@@ -6,12 +6,12 @@ from pygame.locals import K_ESCAPE, KEYDOWN, KEYUP, K_UP, K_DOWN, \
 
 from menu_ui import MenuPause, MenuEnd
 from ball import Ball
-from field import Field, L_GOAL_LINE, R_GOAL_LINE, DISPLAY_SIZE
+from field import Field, L_GOAL_LINE, R_GOAL_LINE
 from slider import Slider, SLIDER_DISTX
 from bots import EasyBot, NormalBot, HardBot
 from scoreboard import ScoreBoard
-from thread_mgr import Thread
-from common import UP, DOWN
+from animation import Animation
+from common import UP, DOWN, DISPLAY_SIZE
 
 
 
@@ -28,7 +28,7 @@ class Battle:
 
     def __init__(self, display):
         self.display = display
-        self.thread = Thread()
+        self.animations_mgr = Animation()
         self.surface = pygame.Surface(DISPLAY_SIZE, pygame.SRCALPHA, 32)
         self.field = Field(self.surface)
         self.scoreboard = ScoreBoard(self.surface, SCOREBOARD_POS)
@@ -46,7 +46,6 @@ class Battle:
         self.state = 'need_wait_put_ball'
         self.pressing_escape = False
         self.modified = False
-        # pygame.time.set_timer(EV_MODIFY_BATTLE, 7000)
         self.present()
 
     def present(self):
@@ -74,7 +73,7 @@ class Battle:
             sprite.clear(self.surface)
 
         main_events_loop(self)
-        self.thread.update(ticks)
+        self.animations_mgr.update(ticks)
 
         if self.check_state('play'):
             self.on_play_state()
@@ -175,7 +174,7 @@ class Battle:
             'balls': self.balls
         }
         ball = Ball(self.field.surface, self.field.rect.center,
-                    self.sprites, collision_objects, self.thread)
+                    self.sprites, collision_objects, self.animations_mgr)
         self.balls.append(ball)
 
     def fill_goals(self):

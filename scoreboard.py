@@ -1,4 +1,4 @@
-import pygame
+from pygame import Surface, Rect, SRCALPHA
 
 from immovable_object import ImmovableObject
 from digit import Digit
@@ -10,8 +10,8 @@ DIGIT_OFFSET = 35, 50
 
 
 class ScoreBoard(ImmovableObject):
-    image_path = 'pic/scoreboard.png'
-    size = (200, 600)
+    image_path = 'scoreboard'
+    size = 200, 600
 
     def __init__(self, background_surface, pos):
         super(ScoreBoard, self).__init__(
@@ -20,11 +20,11 @@ class ScoreBoard(ImmovableObject):
         self.score = None
         self.numbers_dest = (self.rect.x+DIGIT_OFFSET[X], self.rect.y+DIGIT_OFFSET[Y])
         numbers_panel_size = self.rect.width - DIGIT_OFFSET[X], DIGIT_SIZE[Y]*2
-        self.numbers_rect = pygame.Rect(
+        self.numbers_rect = Rect(
             (DIGIT_OFFSET[X], DIGIT_OFFSET[Y]),
             numbers_panel_size
         )
-        self.surface_copy = pygame.Surface(numbers_panel_size, pygame.SRCALPHA, 32)
+        self.surface_copy = Surface(numbers_panel_size, SRCALPHA, 32)
         self.surface_copy.blit(self.surface, ((0,0), numbers_panel_size))
         self.l_number = {}
         self.r_number = {}

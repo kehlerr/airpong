@@ -1,14 +1,13 @@
 from math import fabs
 from random import randint
 from numpy import sign
-import pygame
 
 from common import UP, DOWN
 from field import FIELD_W, FIELD_H
 
 
 class Bot:
-    ''' Базовый класс бота '''
+    ''' Baseclass for bot '''
     def __init__(self, battle, slider, goal):
         self.battle = battle
         self.slider = slider
@@ -43,7 +42,7 @@ class Bot:
 
 
 class EasyBot(Bot):
-    ''' Бот для простой сложности баттла '''
+    ''' Low level bot (almost dummy) for testing '''
     def process_slider(self):
         self.check_need_move_slider_to_center()
         self.calc_slider_direction()
@@ -57,7 +56,7 @@ class EasyBot(Bot):
 
 
 class NormalBot(Bot):
-    ''' Бот для средней сложности баттла '''
+    ''' Medium level bot (default) '''
     def process_slider(self):
         self.check_need_move_slider_to_center()
         self.calc_slider_direction()
@@ -84,7 +83,7 @@ class NormalBot(Bot):
 
 
 class HardBot(Bot):
-    ''' Бот для высокой сложности баттла '''
+    ''' High level bot '''
     def process_slider(self):
         self.check_need_move_slider_to_center()
         self.calc_slider_direction()

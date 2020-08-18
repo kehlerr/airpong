@@ -1,4 +1,3 @@
-import pygame
 import math
 
 from collections import deque
@@ -21,12 +20,12 @@ MAX_SPARKLES_AMOUNT = 80
 
 class Ball(RoundObject):
     size = (BALL_RAD, BALL_RAD)
-    image_path = 'pic/ball_blue.png'
+    image_path = 'ball_blue'
     start_speed = BALL_SPEED
     radius = BALL_RAD/2
 
     def __init__(
-            self, background_surface, pos, group, collision_objects, thread,
+            self, background_surface, pos, group, collision_objects, animations_mgr,
             image_path = None,
             size = None,
             angle = None
@@ -34,7 +33,7 @@ class Ball(RoundObject):
         super(Ball, self).__init__(
             background_surface, pos, image_path, group, size, angle
         )
-        self.thread = thread
+        self.animations_mgr = animations_mgr
         self.angle = self.get_random_angle()
         self.dang = 0
         self.rotation = 0
@@ -61,11 +60,11 @@ class Ball(RoundObject):
 
     def prepare_sparkles(self):
         self.sparkles_slider = Sparkles(
-            self.background_surface, self.thread, group = self.group
+            self.background_surface, self.animations_mgr, group = self.group
         )
         self.sparkles_post = Sparkles(
-            self.background_surface, self.thread,
-            'pic/sparkle_post.png', self.group
+            self.background_surface, self.animations_mgr,
+            'sparkle', self.group
         )
 
     def update(self):

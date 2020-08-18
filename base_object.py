@@ -1,7 +1,7 @@
 import pygame
 
-from common import X, Y
-import color_defs as colors
+from common import X, Y, load_image
+import colors as colors
 
 
 class BaseObject(pygame.sprite.Sprite):
@@ -51,7 +51,7 @@ class BaseObject(pygame.sprite.Sprite):
     def create_view(self):
         try:
             if self.image_path:
-                self.image = pygame.image.load(self.image_path)
+                self.image = load_image(self.image_path)
                 self.default_size = self.image.get_size()
             else:
                 self.image = self.get_primitive_view()

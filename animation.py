@@ -1,7 +1,4 @@
-#!/usr/bin/python
-
-
-class Thread:
+class Animation:
     def __init__(self):
         self.objects = []
         self.workers = []

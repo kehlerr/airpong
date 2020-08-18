@@ -3,6 +3,6 @@ from round_object import RoundObject
 
 
 class Post(ImmovableObject, RoundObject):
-    image_path = 'pic/post.png'
+    image_path = 'post'
     size = (30, 30)
     radius = 15

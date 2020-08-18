@@ -1,7 +1,7 @@
-import pygame
+from pygame import Surface, Rect, transform, SRCALPHA
 
-from common import X, Y
-from color_defs import GOLDEN
+from common import X, Y, load_image
+from colors import GOLDEN
 
 
 class Skin:
@@ -13,7 +13,7 @@ class Skin:
 
     def set_on_widget(self, widget):
         if not self.sprite_atlas:
-            self.sprite_atlas = pygame.image.load(self.img_path)
+            self.sprite_atlas = load_image(self.img_path)
         w_size = widget.size
         left_padding = 0
         right_padding = w_size[0]
@@ -22,7 +22,7 @@ class Skin:
         for piece in self.pieces:
             area_crop = piece['area_crop']
             size = piece['size']
-            piece_sf = pygame.Surface(size)
+            piece_sf = Surface(size)
             piece_sf.blit(self.sprite_atlas, (0,0), (area_crop, size))
             align_x = piece['align_x']
             align_y = piece['align_y']
@@ -58,7 +58,7 @@ class Skin:
                     stretch_size = (size[0], new_height)
 
             if (stretch_size[0] > 0 and stretch_size[1] > 0):
-                piece_sf = pygame.transform.scale(piece_sf, stretch_size)
+                piece_sf = transform.scale(piece_sf, stretch_size)
 
             widget.surface.blit(piece_sf, surface_position)
 
@@ -74,7 +74,7 @@ class Widget:
         self.size = w_size
         self.position = pos
         self.visible = visible != 'False'
-        self.surface = pygame.Surface(w_size, pygame.SRCALPHA, 32)
+        self.surface = Surface(w_size, SRCALPHA, 32)
         self.rect = self.surface.get_rect()
         parent_pos = self.parent.get_absolute_position()
         self.absolute_pos = (
@@ -112,7 +112,7 @@ class Widget:
     def is_mouse_on_wiget(self, cursor_pos: (int, int)) -> bool:
         if not self.visible:
             return
-        absolute_rect = pygame.Rect(self.absolute_pos, self.size)
+        absolute_rect = Rect(self.absolute_pos, self.size)
         return absolute_rect.collidepoint(cursor_pos)
 
     def set_on_hover(self):

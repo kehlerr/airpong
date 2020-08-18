@@ -1,4 +1,4 @@
-import pygame
+from pygame import Surface, Rect, draw, SRCALPHA
 
 from immovable_object import ImmovableObject
 from common import X, Y
@@ -20,11 +20,11 @@ class Line(ImmovableObject):
     def get_primitive_view(self):
         if not self.size:
             self.size = (1, 1)
-        surface = pygame.Surface(self.size, pygame.SRCALPHA, 32)
+        surface = Surface(self.size, SRCALPHA, 32)
         pos = (
             self.start_pos[X] - self.size[X] / 2,
             self.start_pos[Y] - self.size[Y] / 2
         )
-        rect = pygame.Rect(pos, self.size)
-        pygame.draw.rect(surface, self.primitive_color, rect)
+        rect = Rect(pos, self.size)
+        draw.rect(surface, self.primitive_color, rect)
         return surface

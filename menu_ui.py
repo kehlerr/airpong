@@ -2,8 +2,7 @@ from lxml import etree
 import pygame
 
 
-from common import X, Y
-from field import DISPLAY_SIZE
+from common import X, Y, load_image, DISPLAY_SIZE
 from widget import Skin, Widget, Button
 
 
@@ -12,7 +11,7 @@ FONT_PATH = 'ui/iceland.ttf'
 
 
 class MenuUI:
-    fader_bg_path = 'pic/fader_bg.png'
+    fader_bg_path = 'fader_bg'
     width = 400
     height = 500
     layout_path = None
@@ -81,7 +80,7 @@ class MenuUI:
         self.fonts['btn_caption'] = pygame.font.Font(FONT_PATH, 40)
 
     def create_bg_surface(self):
-        bg_sprite = pygame.image.load(self.fader_bg_path)
+        bg_sprite = load_image(self.fader_bg_path)
         self.bg_surface = pygame.transform.scale(bg_sprite, DISPLAY_SIZE)
 
     def add_widget(self, name, type_, size, pos,

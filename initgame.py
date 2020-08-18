@@ -1,7 +1,8 @@
 import pygame
 
-from common import WINDOW_TITLE, KEY_REPEAT_INT, KEY_REPEAT_DEL
-from field import DISPLAY_SIZE, BACKGROUND_COLOR
+from common import WINDOW_TITLE, DISPLAY_SIZE,\
+    KEY_REPEAT_INTERVAL, KEY_REPEAT_DELAY
+from field import BACKGROUND_COLOR
 from battle import Battle
 
 
@@ -14,7 +15,7 @@ def create_window():
 
 def setup_window():
     pygame.display.set_caption(WINDOW_TITLE)
-    pygame.key.set_repeat(KEY_REPEAT_DEL, KEY_REPEAT_INT)
+    pygame.key.set_repeat(KEY_REPEAT_DELAY, KEY_REPEAT_INTERVAL)
     pygame.mouse.set_visible(False)
 
 def create_battle():

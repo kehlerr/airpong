@@ -12,7 +12,7 @@ SPARKLE_DANG = 0.22
 
 
 class Sparkle(RoundObject):
-    image_path = 'pic/sparkle.png'
+    image_path = 'sparkle'
     dang = SPARKLE_DANG
     size = (SPARKLE_SIZE, SPARKLE_SIZE)
     ttl = SPARKLE_TTL

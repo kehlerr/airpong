@@ -1,17 +1,15 @@
 import pygame
 
-import color_defs as colors
+from common import load_image
+from colors import PURPLE
 from line import Line
 from net import Net
 from post import Post
 
 
-DISPLAY_W = 1000
-DISPLAY_H = 600
-DISPLAY_SIZE = (DISPLAY_W, DISPLAY_H)
 FIELD_W = 800
 FIELD_H = 600
-BACKGROUND_COLOR = colors.PURPLE
+BACKGROUND_COLOR = PURPLE
 BORDER_HEIGHT = 20
 NET_SIZE = 30
 GOAL_AREA = NET_SIZE
@@ -27,12 +25,12 @@ POST_TOP_Y = POST_OFFSET_Y
 POST_RIGHT_X = R_GOAL_LINE
 GOAL_LINE_WIDTH = 22
 GOAL_LINE_HEIGHT = POST_BOT_Y - POST_TOP_Y
-BKG_IMG = 'pic/bkg11.jpg'
-BORDER_TOP_IMG = 'pic/border_top.png'
-BORDER_BOT_IMG = 'pic/border_bot.png'
-BORDER_SIDE_IMG = 'pic/border_side.png'
-CENTER_LINE_IMG = 'pic/center_line.png'
-GOAL_LINE_IMG = 'pic/goal_line.png'
+BKG_IMG = 'field_bg'
+BORDER_TOP_IMG = 'border_top'
+BORDER_BOT_IMG = 'border_bot'
+BORDER_SIDE_IMG = 'border_side'
+CENTER_LINE_IMG = 'center_line'
+GOAL_LINE_IMG = 'goal_line'
 
 
 class Field:
@@ -58,7 +56,7 @@ class Field:
         self.draw()
 
     def create_surface(self):
-        background_sprite = pygame.image.load(BKG_IMG)
+        background_sprite = load_image(BKG_IMG)
         self.surface = pygame.transform.scale(background_sprite, self.size)
 
     def draw(self):
