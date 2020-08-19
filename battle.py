@@ -10,25 +10,26 @@ from field import Field, L_GOAL_LINE, R_GOAL_LINE
 from slider import Slider, SLIDER_DISTX
 from bots import EasyBot, NormalBot, HardBot
 from scoreboard import ScoreBoard
-from animation import Animation
+from animation_controller import AnimationController
 from common import UP, DOWN, DISPLAY_SIZE
 
 
 
 PUTTING_BALL_WAIT = 500
 ONSTART_PUTTING_BALL_WAIT = 2000
-EV_MODIFY_BATTLE = USEREVENT + 1
-EV_CLEAR_MODIFICATIONS = EV_MODIFY_BATTLE + 1
 EV_PUT_BALL = USEREVENT + 3
 SCOREBOARD_POS = (900, 300)
 
 
 class Battle:
+    '''
+        Core of game
+    '''
     goals_target = 10
 
     def __init__(self, display):
         self.display = display
-        self.animations_mgr = Animation()
+        self.animations_mgr = AnimationController()
         self.surface = pygame.Surface(DISPLAY_SIZE, pygame.SRCALPHA, 32)
         self.field = Field(self.surface)
         self.scoreboard = ScoreBoard(self.surface, SCOREBOARD_POS)
@@ -45,10 +46,12 @@ class Battle:
         self.balls = []
         self.state = 'need_wait_put_ball'
         self.pressing_escape = False
-        self.modified = False
         self.present()
 
     def present(self):
+        '''
+            Present field on screen, create all objects
+        '''
         self.field.present()
         self.fill_goals()
         self.create_sliders()
@@ -60,6 +63,9 @@ class Battle:
         pygame.display.update(((0,0), DISPLAY_SIZE))
 
     def reset(self):
+        '''
+            Restart for next game
+        '''
         self.score = (0, 0)
         self.update_score()
         self.menu_end.hide()
@@ -69,6 +75,9 @@ class Battle:
         self.update_state('need_wait_put_ball')
 
     def update(self, main_events_loop, ticks):
+        '''
+            Main cycle of battle, processing all objects and actions
+        '''
         for sprite in self.sprites:
             sprite.clear(self.surface)
 
@@ -91,16 +100,15 @@ class Battle:
         pygame.display.update(self.field.rect)
 
     def handle_event(self, event):
+        '''
+            Handling keyboard and user events
+        '''
         if event.type == KEYDOWN:
             self.on_key_down()
         elif event.type == KEYUP:
             self.on_key_up()
         elif event.type == USEREVENT:
             self.handle_user_event(event)
-        elif event.type == EV_MODIFY_BATTLE:
-            self.modify()
-        elif event.type == EV_CLEAR_MODIFICATIONS:
-            self.clear_modifications()
         elif event.type == EV_PUT_BALL:
             self.update_state('play')
             pygame.time.set_timer(EV_PUT_BALL, 0)
@@ -152,19 +160,6 @@ class Battle:
 
     def check_state(self, state):
         return self.state == state
-
-    def modify(self):
-        if not self.modified:
-            self.modified = True
-            pygame.time.set_timer(EV_CLEAR_MODIFICATIONS, 10000)
-    
-    def clear_modifications(self):
-        if self.modified:
-            for ball in self.balls[1:]:
-                self.balls.remove(ball)
-                ball.kill()
-            self.modified = False
-            pygame.time.set_timer(EV_CLEAR_MODIFICATIONS, 0)
 
     def add_ball_to_battle(self):
         collision_objects = {
@@ -228,7 +223,6 @@ class Battle:
             self.update_score((1, 0))
         else:
             self.update_score((0, 1))
-        self.clear_modifications()
         if max(self.score) == self.goals_target:
             self.end_game()
         else:
@@ -239,6 +233,9 @@ class Battle:
         pygame.time.set_timer(EV_PUT_BALL, 500)
 
     def pause_game(self):
+        '''
+            Show pause menu
+        '''
         self.update_state('pause')
         self.pause_menu.set_position(self.menu_pos)
         self.pause_menu.show()
@@ -252,6 +249,9 @@ class Battle:
         self.pause_menu.hide()
 
     def end_game(self):
+        '''
+            Show menu with game result and choice: restart game or quit
+        '''
         self.update_state('pause')
         menu = MenuEnd(self.display, self)
         menu.set_position(self.menu_pos)
@@ -270,7 +270,6 @@ class Battle:
         continue_btn.set_onpressed(self.reset)
         quit_btn = menu.get_widget('quit_btn')
         quit_btn.set_onpressed(self.quit_game)
-
 
     def quit_game(self):
         pygame.event.clear()

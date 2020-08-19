@@ -50,6 +50,10 @@ class Ball(RoundObject):
         self.rotation = 0
 
     def fill_collision_objects(self, collision_objects):
+        '''
+            Setup lists with objects which need check for collisions
+            with this ball.
+        '''
         self.sliders = collision_objects.get('sliders', [])
         self.posts = collision_objects.get('posts', [])
         self.goals = collision_objects.get('goals', [])
@@ -59,12 +63,11 @@ class Ball(RoundObject):
         return [*self.posts, *self.balls]
 
     def prepare_sparkles(self):
+        '''
+            Create particles appearing when collide with sliders
+        '''
         self.sparkles_slider = Sparkles(
             self.background_surface, self.animations_mgr, group = self.group
-        )
-        self.sparkles_post = Sparkles(
-            self.background_surface, self.animations_mgr,
-            'sparkle', self.group
         )
 
     def update(self):
@@ -78,6 +81,11 @@ class Ball(RoundObject):
             self.move(self.dx, self.dy)
 
     def process_moves_history(self):
+        '''
+            Need to store and process ball's changing moves (on X and Y axis)
+            to prevent eternal cycle of reflection between field margins or
+            posts
+        '''
         if self.dx == 0:
             self.zero_dx_count += 1
             if self.zero_dx_count >= ZERO_MOVES_COUNT_MAX:
@@ -95,10 +103,16 @@ class Ball(RoundObject):
                 self.zero_dy_count = 0
 
     def change_angle_slightly(self):
+        '''
+            Use to prevent eternal cycle of reflection
+        '''
         self.dang = 0.003
         self.rotation = 0.08
 
     def calculate_move(self):
+        '''
+            Calculate change of position and angle
+        '''
         self.dx = math.trunc(self.speed * math.cos(self.angle))
         self.dy = math.trunc(self.speed * math.sin(self.angle))
         if self.rotation > 0:
@@ -106,6 +120,10 @@ class Ball(RoundObject):
             self.rotation -= 0.01
 
     def check_collision(self):
+        '''
+            Define if ball collided with some object
+            from collision objects list
+        '''
         if CollisionWithHBorder.check(self):
             self.collision = CollisionWithHBorder(self)
             return
@@ -129,9 +147,15 @@ class Ball(RoundObject):
             return
 
     def generate_sparkles(self, sparkles_group):
+        '''
+            Show sparkles after colliding with sparkle-emitting object
+        '''
         sparkles_count = randint(MIN_SPARKLES_AMOUNT, MAX_SPARKLES_AMOUNT)
         sparkles_group.generate_sparkles(sparkles_count, self.rect.center)
 
     def increase_speed(self):
+        '''
+            Slightly change speed after colliding with some objects
+        '''
         if self.speed < MAX_BALL_SPEED:
             self.speed += 0.75

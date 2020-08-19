@@ -20,5 +20,8 @@ IMAGES_FOLDER_PATH = 'pic/'
 IMAGE_EXT = '.png'
 
 def load_image(image_name):
+    '''
+        Common way to load every sprite
+    '''
     image_path = os.path.join(IMAGES_FOLDER_PATH, image_name+IMAGE_EXT)
     return image.load(image_path)

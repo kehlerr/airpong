@@ -18,6 +18,7 @@ def main_wrapper(loop):
         loop(context = context)
     return decorated
 
+
 @main_wrapper
 def main_loop(context = {}):
     try:
@@ -27,6 +28,7 @@ def main_loop(context = {}):
     except KeyboardInterrupt:
         pygame.quit()
 
+
 def handle_events(handler):
     for event in pygame.event.get():
         if event.type == QUIT:
@@ -35,6 +37,15 @@ def handle_events(handler):
 
         handler.handle_event(event)
 
-if __name__ == '__main__':
+
+def run():
+    '''
+        Initialize all pygame imported modules and run main loop
+    '''
     pygame.init()
-    main_loop()
+    if pygame.get_init():
+        main_loop()
+
+
+if __name__ == '__main__':
+    run()

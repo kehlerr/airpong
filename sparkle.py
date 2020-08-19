@@ -12,6 +12,9 @@ SPARKLE_DANG = 0.22
 
 
 class Sparkle(RoundObject):
+    '''
+        Decorative particle appearing after ball collides with some objects
+    '''
     image_path = 'sparkle'
     dang = SPARKLE_DANG
     size = (SPARKLE_SIZE, SPARKLE_SIZE)

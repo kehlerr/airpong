@@ -12,6 +12,10 @@ class Skin:
         self.sprite_atlas = None
 
     def set_on_widget(self, widget):
+        '''
+            Draw all skin's parts on widget's surface with specified
+            sizes, alignments and positions from skins file
+        '''
         if not self.sprite_atlas:
             self.sprite_atlas = load_image(self.img_path)
         w_size = widget.size
@@ -64,6 +68,9 @@ class Skin:
 
 
 class Widget:
+    '''
+        Base class of UI element
+    '''
     on_hover_skin = None
     default_skin = None
 
@@ -91,6 +98,9 @@ class Widget:
         self.on_pressed = None
 
     def set_caption(self):
+        '''
+            Setup text information for displaying on widget
+        '''
         self.caption = self.caption_data.get('value')
         self.caption_position = (
             int(self.caption_data['left']),
@@ -116,12 +126,18 @@ class Widget:
         return absolute_rect.collidepoint(cursor_pos)
 
     def set_on_hover(self):
+        '''
+            Can be set if mouse cursor on this widget
+        '''
         pass
 
     def reset_hover(self):
         pass
 
     def set_onpressed(self, func):
+        '''
+            Set callback func for this widget, when mouse press on it
+        '''
         self.on_pressed = func
 
     def on_mouse_pressed(self):

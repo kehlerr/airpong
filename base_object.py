@@ -49,6 +49,9 @@ class BaseObject(pygame.sprite.Sprite):
         self.crop_rect = crop_rect
 
     def create_view(self):
+        '''
+            Creating view of object
+        '''
         try:
             if self.image_path:
                 self.image = load_image(self.image_path)
@@ -59,9 +62,16 @@ class BaseObject(pygame.sprite.Sprite):
             self.image = self.get_primitive_view()
 
     def get_primitive_view(self):
+        '''
+            Using if image sprite loading failed;
+            draws view with graphics primitives and white color.
+        '''
         raise NotImplementedError
 
     def create_surface(self):
+        '''
+            Root surface for object's view
+        '''
         surface = pygame.Surface(self.size, pygame.SRCALPHA, 32)
         surface.blit(self.image, self.rect)
         self.surface = surface.convert_alpha()
@@ -91,6 +101,10 @@ class BaseObject(pygame.sprite.Sprite):
         from_surface.blit(self.background_surface, rect, rect)
 
     def put(self, pos = None, rect = None, angle = None):
+        '''
+            Put object on specified position with rect and angle or
+            use start values
+        '''
         if pos:
             self.moveto(pos)
         else:
@@ -105,10 +119,19 @@ class BaseObject(pygame.sprite.Sprite):
             self.angle = self.start_angle
 
     def move(self, dx = 0, dy = 0):
+        '''
+            Change position relatively to current position
+        '''
         self.rect.move_ip(dx, dy)
 
     def moveto(self, pos):
+        '''
+            Set position
+        '''
         self.rect.center = pos
 
     def __del__(self):
+        '''
+            Destroy and remove object from all sprites groups
+        '''
         self.kill()

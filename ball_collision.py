@@ -11,10 +11,17 @@ MAX_SPARKLES_AMOUNT = 80
 
 
 class Collision:
+    '''
+        Base class of collision ball with objects
+    '''
     def __init__(self, ball):
         self.ball = ball
 
     def handle(self):
+        '''
+            Handling collisions:
+            change ball's parameters, such as position, angle and speed
+        '''
         self.change_angle()
         self.change_pos()
 
@@ -25,11 +32,14 @@ class Collision:
         raise NotImplementedError()
 
     @staticmethod
-    def check():
+    def check()-> bool:
         raise NotImplementedError()
 
 
 class CollisionWithHBorder(Collision):
+    '''
+        Collisions with horizontal borders, top and bottom
+    '''
     def change_angle(self):
         self.ball.angle *= -1
         self.ball.dang = 0
@@ -46,6 +56,9 @@ class CollisionWithHBorder(Collision):
 
 
 class CollisionWithVBorder(Collision):
+    '''
+        Collisions with vertical borders, around goals
+    '''
     def __init__(self, ball):
         super().__init__(ball)
         self.l_border_x = L_GOAL_LINE
@@ -67,6 +80,10 @@ class CollisionWithVBorder(Collision):
 
 
 class CollisionWithRound(Collision):
+    '''
+        Collisions with round objects, such as posts, other balls,
+        sliders round parts.
+    '''
     def __init__(self, ball, round_object):
         self.ball = ball
         self.obj_x = round_object.rect.centerx
@@ -74,7 +91,10 @@ class CollisionWithRound(Collision):
         self.obj_r = round_object.radius
         self.ang_collide = 0
 
-    def define_ang_collide(self):
+    def define_angle_collide(self):
+        '''
+            Calculation angle of collide between two round objects
+        '''
         dist_x = self.obj_x - self.ball.rect.centerx
         dist_y = self.obj_y - self.ball.rect.centery
         c_hypoten = math.hypot(dist_x, dist_y)
@@ -92,7 +112,7 @@ class CollisionWithRound(Collision):
             self.ang_collide *= -1
 
     def handle(self):
-        self.define_ang_collide()
+        self.define_angle_collide()
         super().handle()
 
     def change_angle(self):
@@ -117,6 +137,9 @@ class CollisionWithRound(Collision):
         return None
 
 class CollisionWithGoal(CollisionWithVBorder):
+    '''
+        Collisions with goals
+    '''
     def handle(self):
         goal_side = self.ball.rect.centerx//(FIELD_W/2)
         ev = pygame.event.Event(pygame.USEREVENT,{'goal':goal_side})
@@ -173,6 +196,9 @@ class CollisionWithSlider(CollisionWithVBorder, CollisionWithRound):
         self.ball.increase_speed()
 
     def change_pos_between_rounds(self):
+        '''
+            Change position if ball collides between round parts of slider
+        '''
         ball_offset_x = - sign(self.ball.dx)*(self.obj_r + self.ball.radius)
         self.ball.rect.centerx = self.obj_x + ball_offset_x
 
@@ -196,13 +222,16 @@ class CollisionWithSlider(CollisionWithVBorder, CollisionWithRound):
 
     @staticmethod
     def check_intersect(ball, slider):
-        def onSegment(a, b, c):
+        '''
+            Check ball intersection with sliders segment
+        '''
+        def onSegment(a: (int, int), b: (int, int), c: (int, int))-> bool:
             return (
                 a[X] <= max(b[X], c[X]) and a[X] >= min(b[X], c[X]) and
                 a[Y] <= max(b[Y], c[Y]) and a[Y] >= min(b[Y], c[Y])
             )
 
-        def CCW_orientation(a, b, c):
+        def CCW_orientation(a: (int, int), b: (int, int), c: (int, int)):
             val = (a[Y]-b[Y])*(c[X]-a[X])-(a[X]-b[X])*(c[Y]-a[Y])
             if val == 0:
                 return 0

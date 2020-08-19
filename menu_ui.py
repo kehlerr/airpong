@@ -11,6 +11,9 @@ FONT_PATH = 'ui/iceland.ttf'
 
 
 class MenuUI:
+    '''
+        Base class of menu with layout and widgets with skins
+    '''
     fader_bg_path = 'fader_bg'
     width = 400
     height = 500
@@ -30,6 +33,9 @@ class MenuUI:
         self.widgets = {}
 
     def load_skins(self):
+        '''
+            Parse skins and parameters from common skins xml file
+        '''
         tree = etree.parse(SKINS_PATH)
         root = tree.getroot()
         root_skins = root.findall('skin')
@@ -58,6 +64,9 @@ class MenuUI:
             self.skins[name] = Skin(name, img_path, pieces)
 
     def load_layout(self):
+        '''
+            Parse layout from self layout xml file
+        '''
         tree = etree.parse(self.layout_path)
         root = tree.getroot()
         widgets = root.findall('widget')
@@ -80,6 +89,9 @@ class MenuUI:
         self.fonts['btn_caption'] = pygame.font.Font(FONT_PATH, 40)
 
     def create_bg_surface(self):
+        '''
+            Create background fader
+        '''
         bg_sprite = load_image(self.fader_bg_path)
         self.bg_surface = pygame.transform.scale(bg_sprite, DISPLAY_SIZE)
 
@@ -91,16 +103,22 @@ class MenuUI:
             w = Widget(self, name, size, pos, caption_data, skin, visible)
         self.widgets[name] = w
 
-    def get_widget(self, name):
+    def get_widget(self, name: str)-> Widget:
         return self.widgets.get(name)
 
     def get_absolute_position(self):
+        '''
+            Need to calculate absolute position of child widgets
+        '''
         return self.position
 
     def set_position(self, pos):
         self.position = pos
 
     def show(self):
+        '''
+            Load layout if needed and draw widgets on display
+        '''
         if not self.widgets:
             self.load_layout()
         pygame.mouse.set_visible(True)
@@ -111,11 +129,17 @@ class MenuUI:
         pygame.display.update(((0,0), DISPLAY_SIZE))
 
     def hide(self):
+        '''
+            Redraw parent's surface to display and hide mouse cursor
+        '''
         pygame.mouse.set_visible(False)
         self.display.blit(self.parent.surface, (0, 0))
         pygame.display.update(((0,0), DISPLAY_SIZE))
 
     def draw(self, surface=None, dest=(0,0), rect=None):
+        '''
+            Draw widget's surface or redraw self
+        '''
         if not surface:
             surface = self.surface
         self.display.blit(surface, dest, rect)
@@ -127,6 +151,9 @@ class MenuUI:
         pygame.display.update()
 
     def process_widgets(self):
+        '''
+            Update widgets after user actions
+        '''
         mouse_pos = pygame.mouse.get_pos()
         for w in self.widgets.values():
             if w.is_mouse_on_wiget(mouse_pos):
@@ -143,6 +170,7 @@ class MenuUI:
 
 class MenuPause(MenuUI):
     layout_path = 'ui/menu_layout.xml'
+
 
 class MenuEnd(MenuUI):
     layout_path = 'ui/end_screen_layout.xml'

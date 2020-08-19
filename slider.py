@@ -12,6 +12,10 @@ SLIDER_W = 30
 
 
 class Slider(BaseObject):
+    '''
+        Object managed by user or PC to
+        score goal with ball and protect self side
+    '''
     size = (SLIDER_W, SLIDER_H)
     max_speed = 15
     acceleration = 0.75

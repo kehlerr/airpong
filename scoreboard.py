@@ -1,7 +1,6 @@
 from pygame import Surface, Rect, SRCALPHA
 
 from immovable_object import ImmovableObject
-from digit import Digit
 from common import X, Y
 
 
@@ -10,6 +9,9 @@ DIGIT_OFFSET = 35, 50
 
 
 class ScoreBoard(ImmovableObject):
+    '''
+        Informative and decorative object displaying current game score
+    '''
     image_path = 'scoreboard'
     size = 200, 600
 
@@ -36,6 +38,9 @@ class ScoreBoard(ImmovableObject):
         self.redraw()
 
     def clear_numbers(self):
+        '''
+            Clear numbers from scoreboard
+        '''
         if self.l_number:
             self.del_number(self.l_number)
             self.l_number.clear()
@@ -45,11 +50,17 @@ class ScoreBoard(ImmovableObject):
         self.surface.blit(self.surface_copy, (0, 0))
 
     def del_number(self, number):
+        '''
+            Clear number by digits
+        '''
         for d in number:
             digit = number[d]
             digit.clear(self.surface)
 
     def create_numbers(self):
+        '''
+            Create numbers of score and decompose on digits
+        '''
         l_num = str(self.score[0])
         r_num = str(self.score[1])
 
@@ -80,4 +91,16 @@ class ScoreBoard(ImmovableObject):
         self.background_surface.blit(
             self.surface,
             self.numbers_dest, self.numbers_rect
+        )
+
+
+class Digit(ImmovableObject):
+    '''
+        Static digit image displaying on scoreboard
+    '''
+
+    def __init__(self, background_surface, pos, size, digit, color):
+        image_path = f'digit_{digit}_{color}'
+        super(Digit, self).__init__(
+            background_surface, pos, image_path, size = size
         )

@@ -4,6 +4,9 @@ from sparkle import Sparkle
 
 
 class Sparkles:
+    '''
+        Class for managing particles
+    '''
     max_sparkles_amount = 150
 
     def __init__(
