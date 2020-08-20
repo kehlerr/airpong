@@ -2,7 +2,7 @@ import os
 from pygame import time, image
 
 CLOCK = time.Clock()
-FPS = 60
+FPS = 100
 KEY_REPEAT_DELAY = 10
 KEY_REPEAT_INTERVAL = 12
 WINDOW_TITLE = 'AirPong'
